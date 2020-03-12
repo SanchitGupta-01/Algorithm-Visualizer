@@ -11,12 +11,11 @@ class BubbleSort(bar.BarGUI):
         n = len(arr)
         for i in range(n-1):
             for j in range(n-i-1):
-                print('loop')
                 if arr[j][1] > arr[j+1][1]:
                     arr[j], arr[j+1] = arr[j+1], arr[j]
-                    self.draw((i, j), '#F87217')
+                    yield tuple(((j, j+1), '#F87217'))
                 else:
-                    self.draw((i, j))
+                    yield tuple(((j, j+1), '#F87217'))
 
 
 BubbleSort()

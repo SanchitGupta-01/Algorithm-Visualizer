@@ -13,10 +13,10 @@ class BarGUI:
         self.__top = Frame(self.__root)
         self.__canvas = Canvas(self.__root)
         self.bar_count = 0
+        self.__render_max = 0
         self.height = self.__root.winfo_height()
         self.width = self.__root.winfo_width()
         self.bar_draw = Canvas(self.__canvas, bg='grey')
-        self.bar_draw.pack(fill=BOTH, expand=True, padx=40, pady=30)
         self.__bars = []
         self.title = "bar"
         self.function_to_run = func
@@ -39,9 +39,14 @@ class BarGUI:
     def display(self):
         self.__root.mainloop()
 
-    def draw(self, *args):
-        time.sleep(1)
-        self.__render_bars(*args)
+    def draw(self, states):
+        try:
+            self.__render_bars(*next(states))
+        except StopIteration:
+            self.bar_draw.after(300, self.__render_bars())
+            print("completed")
+            return
+        self.bar_draw.after(300, self.draw, states)
 
     def set_title(self, s):
         self.title = s
@@ -63,11 +68,14 @@ class BarGUI:
         self.__root.geometry(f"600x400+{int(self.__root.winfo_screenwidth() / 2 - 300)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 250)}")
         self.__root.update()
+        self.__render_max = self.bar_count
         self.__canvas.configure(bg='grey')
         self.height = self.__root.winfo_height()
         self.width = self.__root.winfo_width()
 
         self.__canvas.bind("<Configure>", self.__on_window_resize)
+        self.bar_draw.bind("<Configure>", self.__on_window_resize)
+        self.bar_draw.pack(fill=BOTH, expand=True, padx=40, pady=30)
         self.__canvas.pack(fill=BOTH, expand=True)
         self.__canvas.update()
 
@@ -75,26 +83,25 @@ class BarGUI:
         for i in range(self.bar_count):
             self.__bars.append((None, randrange(50, self.__canvas.winfo_height() - 20)))
 
-        # rendering bars initially
-        self.draw()
-
         # rendering according to function to run
-        self.function_to_run()
+        self.draw(self.function_to_run())
 
     def __render_bars(self, active_bars=(), b_color_set='#3D3C3A'):
-        print(active_bars, b_color_set, )
-        print("render")
         self.bar_draw.delete('all')
         bar_width = int(self.bar_draw.winfo_width() / self.bar_count)
+        active = list(active_bars)
         for i, bar in enumerate(self.__bars):
-            b_color = b_color_set
+            if i < self.__render_max or len(active) == 0:
+                b_color = b_color_set
+            else:
+                b_color = '#15317E'
 
-            if i in active_bars:
+            if i in active:
+                if i == self.__render_max-1:
+                    self.__render_max -= 1
                 b_color = '#6CC417'
-                a = list(active_bars)
-                a.remove(i)
-                active_bars = tuple(a)
 
+            print(active, b_color, "render")
             bd = self.bar_draw
             bd.create_rectangle(i * bar_width + 2, bd.winfo_height() - bar[1],
                                 (i + 1) * bar_width - 2, bd.winfo_height(),
