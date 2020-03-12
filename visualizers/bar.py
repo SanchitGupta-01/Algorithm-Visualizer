@@ -1,6 +1,7 @@
 from tkinter import *
 from random import randrange
 
+
 class BarGUI:
     def __init__(self):
         self.__root = Tk()
@@ -14,6 +15,7 @@ class BarGUI:
         self.bar_count = 0
         self.height = self.__root.winfo_height()
         self.width = self.__root.winfo_width()
+        self.bar_draw = Canvas(self.__canvas, bg='grey')
         self.__bars = []
         self.title = "bar"
         self.initiator()
@@ -62,21 +64,20 @@ class BarGUI:
         self.__canvas.update()
 
         # adding bars to array  ----- None for future .. if want to add bars as widgets
-        rand = randrange(50, self.__canvas.winfo_height()-20)
         for i in range(self.bar_count):
-            self.__bars.append((None, rand))
+            self.__bars.append((None, randrange(50, self.__canvas.winfo_height()-20)))
 
         # rendering bars
-        # x_len = int(self.__canvas.winfo_width() / self.bar_count)
-        # for i, j in zip(
-        #         range(30, self.width-30, int((self.width-30) / self.bar_count)),
-        #         [j for j in range(self.bar_count)]):
-        #     y = self.__canvas.winfo_height() - self.__bars[j][1]
-        #     y_len = self.__bars[j][1]
-        #     self.__canvas.create_rectangle(i, y, x_len, y_len)
-        bar_draw = Canvas(self.__canvas, bg="blue")
-        bar_draw.pack(fill=BOTH, expand=True, padx=40, pady=30)
+        self.render_bars()
 
+    def render_bars(self):
+        self.bar_draw.pack(fill=BOTH, expand=True, padx=40, pady=30)
+        self.bar_draw.update()
+        bar_width = int(self.bar_draw.winfo_width() / self.bar_count)
+        for i, bar in enumerate(self.__bars):
+            with self.bar_draw as bd:
+                bd.create_rectangle(i * bar_width + 2, bd.winfo_height() - bar[1],
+                                    (i+1)*bar_width - 2, bd.winfo_height(), fill='#3D3C3A', outline='#3D3C3A')
 
     def on_window_resize(self, e):
         w_scale = e.width / self.width
