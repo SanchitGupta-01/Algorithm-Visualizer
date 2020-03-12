@@ -6,8 +6,12 @@ root.geometry(f"300x100+{int(root.winfo_screenwidth()/2 - 150)}+{int(root.winfo_
 root.minsize(250, 90)
 
 top = Frame(root)
+canvas = Canvas(root)
 rows = 0
 columns = 0
+height = root.winfo_height()
+width = root.winfo_width()
+__buttons = []
 title = "grid"
 
 
@@ -16,19 +20,52 @@ def set_title(s):
     title = s
 
 
+def get_button():
+    return __buttons
+
+
 def create_grid():
-    canvas = Canvas(root)
+    global height, width
     root.geometry(f"500x500+{int(root.winfo_screenwidth()/2 - 250)}+{int(root.winfo_screenheight()/2 - 300)}")
     root.update()
+    canvas.configure(bg='grey')
     height = root.winfo_height()
     width = root.winfo_width()
+
+    # can remove these two loops  and just set the canvas bg as black and change the padding for buttons as req.
     for j in range(0, height, int(height / columns)):
         canvas.create_line(0, j, width, j, fill='black')
 
     for i in range(0, width, int(width/rows)):
         canvas.create_line(i, 0, i, height, fill='black')
 
+    set_grid()
+    canvas.bind("<Configure>", on_grid_resize)
     canvas.pack(fill=BOTH, expand=True)
+
+
+def on_grid_resize(e):
+    global width, height
+    w_scale = e.width / width
+    h_scale = e.height / height
+    width = e.width
+    height = e.height
+    canvas.scale('all', 0, 0, w_scale, h_scale)
+
+
+def set_grid():
+    for i in range(rows):
+        bs = []
+        for j in range(columns):
+            button = Button(canvas, bg='grey', width=int(width / rows)+1, height=int(height / columns)+1, relief=FLAT)
+            bs.append(button)
+            Grid.rowconfigure(canvas, i, weight=1)
+            Grid.columnconfigure(canvas, j, weight=1)
+            button.bind("<Enter>", lambda e=0: e.widget.config(bg='lightgrey'))
+            button.bind("<Leave>", lambda e=1: e.widget.config(bg='grey'))
+            button.grid(row=i, column=j, padx=2, pady=2, sticky='nsew')
+
+        __buttons.append(bs)
 
 
 def get_data(r, c):
@@ -42,7 +79,6 @@ def get_data(r, c):
     root.title(title)
     top.forget()
     create_grid()
-    map(button_config, [])
 
 
 def initiator():
