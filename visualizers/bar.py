@@ -32,7 +32,8 @@ class BarGUI:
         # for controlling color.....
         self.__render_max = 0
         self.__resized = False
-        self.__render_speed = 100
+        self.__render_speed = 1
+        self.finished = False
 
         # sorting function to run
         self.__function_to_run = func
@@ -43,7 +44,7 @@ class BarGUI:
         self.width = self.__root.winfo_width()
         self.__canvas_height = self.__canvas.winfo_height()
         self.__canvas_width = self.__canvas.winfo_width()
-        if self.__resized:
+        if self.__resized and self.finished:
             print("update")
             self.draw(iter([]))
             self.__resized = False
@@ -78,11 +79,6 @@ class BarGUI:
 
         self.__updater()
 
-    def __get_arr(self):
-        print(self.__canvas_height)
-        for i in range(self.__bar_count):
-            self.__bars.append((None, randrange(25, self.__canvas.winfo_height()-5)))
-
     def __create_bars(self):
         self.__root.geometry(f"600x400+{int(self.__root.winfo_screenwidth() / 2 - 300)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 250)}")
@@ -93,18 +89,19 @@ class BarGUI:
 
         self.__root.bind("<Configure>", self.__on_window_resize)
         self.__canvas.pack(fill=BOTH, expand=True, padx=40, pady=30)
-        self.__canvas.update()
 
         # adding bars to array  ----- (None for future use.. if want to add bars as widgets)
-        self.__get_arr()
+        for i in range(self.__bar_count):
+            self.__bars.append((None, randrange(25,
+                                                self.__canvas.winfo_reqheight()) / self.__canvas.winfo_reqheight()))
 
         # rendering according to function to run
-        self.draw(self.__function_to_run())
+        self.__canvas.after(20, self.draw, self.__function_to_run())
 
     def __render_bars(self, active_bars=(), b_color_set='#3D3C3A', move=False):
         self.__canvas.delete('all')
 
-        bar_width = self.__canvas.winfo_width() // self.__bar_count
+        bar_width = self.__canvas.winfo_width() / self.__bar_count
         active = list(active_bars)
 
         for i, bar in enumerate(self.__bars):
@@ -125,10 +122,9 @@ class BarGUI:
                     b_color = b_color_set.split('+')[1]
                     # self.move_bars(*active)
 
-            print(self.__canvas.winfo_reqwidth())
             bd = self.__canvas
-            bd.create_rectangle(i * bar_width + 2, bd.winfo_reqheight() - bar[1],
-                                (i + 1) * bar_width - 2, bd.winfo_reqheight(),
+            bd.create_rectangle(i * bar_width + 2, bd.winfo_height() - bar[1] * bd.winfo_height(),
+                                (i + 1) * bar_width - 2, bd.winfo_height(),
                                 fill=b_color, outline=b_color)
 
     def __on_window_resize(self, e):
@@ -144,6 +140,7 @@ class BarGUI:
             self.__render_bars(*next(states))
         except StopIteration:
             self.__canvas.after(self.__render_speed, self.__render_bars)
+            self.finished = True
             print("completed")
             return
         self.__canvas.after(self.__render_speed, self.draw, states)
@@ -163,6 +160,9 @@ class BarGUI:
 
     def set_title(self, s):
         self.title = s
+
+    def set_render_speed(self, speed):
+        self.__render_speed = speed
 
     def get_bars(self):
         return self.__bars
