@@ -1,4 +1,5 @@
 import visualizers.bar as bar
+from visualizers.colors import *
 
 
 class InsertionSort(bar.BarGUI):
@@ -12,12 +13,12 @@ class InsertionSort(bar.BarGUI):
         for i in range(1, n):
             j = i
             while j > 0 and arr[j] < arr[j-1]:
-                yield tuple(((j-1, j), '#F87217+#990012', True))
+                yield tuple(((j-1, j), f'{ORANGE}+{RED}', True))
                 arr[j], arr[j-1] = arr[j-1], arr[j]
-                yield tuple(((j-1, j), '#F87217'))
+                yield tuple(((j-1, j), ORANGE))
                 j -= 1
             else:
-                yield tuple(((j-1, j), '#F87217'))
+                yield tuple(((j-1, j), ORANGE))
 
 
 InsertionSort()

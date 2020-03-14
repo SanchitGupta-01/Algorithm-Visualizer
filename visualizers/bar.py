@@ -1,5 +1,7 @@
 from tkinter import *
 from random import randrange
+from visualizers.colors import *
+import time
 
 
 class BarGUI:
@@ -32,7 +34,7 @@ class BarGUI:
         # for controlling color.....
         self.__render_max = 0
         self.__resized = False
-        self.__render_speed = 1
+        self.__render_speed = 100
         self.finished = False
 
         # sorting function to run
@@ -98,7 +100,7 @@ class BarGUI:
         # rendering according to function to run
         self.__canvas.after(20, self.draw, self.__function_to_run())
 
-    def __render_bars(self, active_bars=(), b_color_set='#3D3C3A', move=False):
+    def __render_bars(self, active_bars=(), b_color_set=GREY, move=False):
         self.__canvas.delete('all')
 
         bar_width = self.__canvas.winfo_width() / self.__bar_count
@@ -110,14 +112,14 @@ class BarGUI:
                 b_color = b_color_set.split('+')[0]
             else:
                 # blue on sorted
-                b_color = '#15317E'
+                b_color = BLUE
 
             if i in active:
                 if i == self.__render_max - 1 and not move:
                     self.__render_max -= 1
                 # green on active or reddish on swap bars
                 if not move:
-                    b_color = '#6CC417'
+                    b_color = GREEN
                 else:
                     b_color = b_color_set.split('+')[1]
                     # self.move_bars(*active)
@@ -135,7 +137,7 @@ class BarGUI:
         # self.__canvas.scale('all', 0, 0, w_scale, h_scale)
         self.__resized = True
 
-    def draw(self, states):
+    def draw(self, states: iter):
         try:
             self.__render_bars(*next(states))
         except StopIteration:
@@ -163,6 +165,9 @@ class BarGUI:
 
     def set_render_speed(self, speed):
         self.__render_speed = speed
+
+    def set_function_to_run(self, func, *args, **kwargs):
+        self.__function_to_run = lambda i=0: func(*args, **kwargs)
 
     def get_bars(self):
         return self.__bars
