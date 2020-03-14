@@ -16,11 +16,11 @@ class SelectionSort(bar.BarGUI):
             for j in range(i+1, n):
                 if arr[j] < arr[min_index]:
                     min_index = j
-                yield tuple(((i, j, min_index), '#F87217'))
+                yield tuple(((i, j, min_index), False))
 
-            yield tuple(((i, min_index), '#F87217+#990012', True))  # orange and reddish...
+            yield tuple(((i, min_index), True))
             arr[i], arr[min_index] = arr[min_index], arr[i]
-            yield tuple(((i, min_index), '#F87217'))
+            yield tuple(((i, min_index), False))
 
 
 SelectionSort()

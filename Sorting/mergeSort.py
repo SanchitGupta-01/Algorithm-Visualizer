@@ -22,23 +22,23 @@ class MergeSort(BarGUI):
         while i < len(a_1) and j < len(a_2):
             if a_1[i] < a_2[j]:
                 arr[k] = a_1[i]
-                yield tuple(((k, i + left), f'{ORANGE}+{RED}', True))
+                yield tuple(((k, i + left), True))
                 i += 1
             else:
                 arr[k] = a_2[j]
-                yield tuple(((k, j + middle + 1), f'{ORANGE}+{RED}', True))
+                yield tuple(((k, j + middle + 1), True))
                 j += 1
             k += 1
 
         while i < len(a_1):
             arr[k] = a_1[i]
-            yield tuple(((k, i + left), f'{ORANGE}+{RED}', True))
+            yield tuple(((k, i + left), True))
             i += 1
             k += 1
 
         while j < len(a_2):
             arr[k] = a_2[j]
-            yield tuple(((k, j + middle + 1), f'{ORANGE}+{RED}', True))
+            yield tuple(((k, j + middle + 1), True))
             j += 1
             k += 1
 

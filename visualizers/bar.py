@@ -100,32 +100,34 @@ class BarGUI:
         # rendering according to function to run
         self.__canvas.after(20, self.draw, self.__function_to_run())
 
-    def __render_bars(self, active_bars=(), b_color_set=GREY, move=False):
+    def __render_bars(self, active_bars: tuple = (), swap=False,
+                      remaining_color=ORANGE, swap_color=RED,
+                      active_color=GREEN, sorted_color=BLUE,
+                      finished_color=GREY):
         self.__canvas.delete('all')
 
-        bar_width = self.__canvas.winfo_width() / self.__bar_count
+        bar_width = (self.__canvas.winfo_width() - 4) / self.__bar_count
         active = list(active_bars)
 
         for i, bar in enumerate(self.__bars):
-            # orange on remaining items
             if i < self.__render_max or len(active) == 0:
-                b_color = b_color_set.split('+')[0]
+                b_color = remaining_color
             else:
-                # blue on sorted
-                b_color = BLUE
+                b_color = sorted_color
 
             if i in active:
-                if i == self.__render_max - 1 and not move:
+                if i == self.__render_max - 1 and not swap:
                     self.__render_max -= 1
-                # green on active or reddish on swap bars
-                if not move:
-                    b_color = GREEN
+                if not swap:
+                    b_color = active_color
                 else:
-                    b_color = b_color_set.split('+')[1]
-                    # self.move_bars(*active)
+                    b_color = swap_color
+
+            if self.finished:
+                b_color = finished_color
 
             bd = self.__canvas
-            bd.create_rectangle(i * bar_width + 2, bd.winfo_height() - bar[1] * bd.winfo_height(),
+            bd.create_rectangle(i * bar_width + 4, bd.winfo_height() - bar[1] * bd.winfo_height(),
                                 (i + 1) * bar_width - 2, bd.winfo_height(),
                                 fill=b_color, outline=b_color)
 
