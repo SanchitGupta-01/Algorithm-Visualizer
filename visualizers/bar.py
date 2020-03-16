@@ -34,7 +34,7 @@ class BarGUI:
         # for controlling color.....
         self.__render_max = 0
         self.__resized = False
-        self.__render_speed = 100
+        self.__render_speed = IntVar(self.__canvas, 100)
         self.finished = False
 
         # sorting function to run
@@ -63,7 +63,7 @@ class BarGUI:
         e_label = Label(self.__input_container)  # unused
         e_label.grid(row=1, column=0, columnspan=2)
 
-        bc_entry = Entry(self.__input_container)
+        bc_entry = Entry(self.__input_container, highlightcolor=RED)
         bc_entry.grid(row=0, column=1, sticky='nsew')
 
         make = Button(self.__input_container, text="Visualize!!!", command=lambda i=0: get_data(bc_entry))
@@ -72,7 +72,7 @@ class BarGUI:
         def get_data(bc):
             try:
                 self.__bar_count = int(bc.get())
-            except ...:
+            except ValueError:
                 e_label['text'] = "Sorry, Enter Valid Number!!!"
                 return
             self.__root.title(self.title)
@@ -143,11 +143,11 @@ class BarGUI:
         try:
             self.__render_bars(*next(states))
         except StopIteration:
-            self.__canvas.after(self.__render_speed, self.__render_bars)
+            self.__canvas.after(self.__render_speed.get(), self.__render_bars)
             self.finished = True
             print("completed")
             return
-        self.__canvas.after(self.__render_speed, self.draw, states)
+        self.__canvas.after(self.__render_speed.get(), self.draw, states)
 
     # todo implement method move_bars
     # def move_bars(self, i, j):
@@ -166,7 +166,7 @@ class BarGUI:
         self.title = s
 
     def set_render_speed(self, speed):
-        self.__render_speed = speed
+        self.__render_speed.set(speed)
 
     def set_function_to_run(self, func, *args, **kwargs):
         self.__function_to_run = lambda i=0: func(*args, **kwargs)

@@ -1,9 +1,9 @@
-import types
+from visualizers.colors import *
 from tkinter import *
 
 
 class GridGUI:
-    def __init__(self):
+    def __init__(self, func):
         self.__root = Tk()
         self.__root.geometry(f"300x100+{int(self.__root.winfo_screenwidth() / 2 - 150)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 100)}")
@@ -20,7 +20,7 @@ class GridGUI:
 
         self.rows = 0
         self.columns = 0
-        self.__nodes = []
+        self.__nodes: (GridNodes, None) = None
         self.resized = False
 
         self.__initiator()
@@ -32,7 +32,7 @@ class GridGUI:
             self.__canvas.delete('all')
             self.__set_grid()
             self.resized = False
-        self.__root.after(10 + (self.columns*self.rows)//10, self.__updater)
+        self.__root.after(10 + (self.columns * self.rows) // 10, self.__updater)
 
     def __initiator(self):
         Grid.columnconfigure(self.__input_container, 0, weight=1)
@@ -64,7 +64,7 @@ class GridGUI:
             except ValueError:
                 e_label['text'] = "Sorry, Enter Valid Numbers!!!"
                 return
-            self.__nodes = [['grey' for _ in range(self.columns)] for _ in range(self.rows)]
+            self.__nodes = GridNodes(rows=self.rows, columns=self.columns, color=GREY)
             self.__root.title(self.__title)
             self.__input_container.forget()
             self.__create_grid()
@@ -99,7 +99,7 @@ class GridGUI:
                 width = self.width / self.columns
                 height = self.height / self.rows
                 self.__canvas.create_rectangle(width * j, height * i, width * (j + 1), height * (i + 1),
-                                               fill=self.__nodes[i][j], outline='black')
+                                               fill=self.__nodes.get_color(i, j), outline='black')
 
     # def __create_lines(self):
     #     for j in range(0, self.height, int(self.height / self.columns)):
@@ -122,11 +122,11 @@ class GridGUI:
     def set_title(self, s):
         self.__title = s
 
-    def get_buttons(self):
-        return self.__buttons
-
     def get_root(self):
         return self.__root
+
+    def get_grid_nodes(self):
+        return self.__nodes
 
     def display(self):
         self.__root.mainloop()
@@ -137,3 +137,67 @@ class GridGUI:
     # @staticmethod
     # def on_button_click():
     #     pass
+
+
+class GridNodes:
+    class __Node:
+        def __init__(self, master, y_index, x_index, g, color):
+            self.g, self.h, self.f = g, None, None
+            self.master: GridNodes = master
+            self.parent = None
+            self.y_index = y_index
+            self.x_index = x_index
+            self.color = color
+            pass
+
+        def get_neighbors(self):
+            return GridNodes._get_neighbors(self.master, self.x_index, self.y_index)
+
+    def __init__(self, rows, columns, start=None, goal=None, color=GREY):
+        self.rows = rows
+        self.columns = columns
+        self.__goal_node = goal
+        self.__start_node = start
+        self.__nodes = {}
+        for i in range(rows):
+            for j in range(columns):
+                self.__nodes[(i, j)] = self.__Node(self, i, j, 1, color)
+
+    def get_nodes(self):
+        assert self.__nodes is not None, 'nodes not set'
+        return self.__nodes
+
+    def get_color(self, i, j):
+        return self.__nodes[(i, j)].color
+
+    def set_color(self, i, j, color):
+        self.__nodes[(i, j)].color = color
+
+    def set_start_node(self, start):
+        self.__start_node = start
+
+    def set_goal_node(self, goal):
+        self.__goal_node = goal
+
+    def get_start_node(self):
+        return self.__start_node
+
+    def get_goal_node(self):
+        return self.__goal_node
+
+    @staticmethod
+    def get_distance():
+        pass
+
+    @staticmethod
+    def _get_neighbors(self, x, y):
+        adjacent = ((-1, -1), (0, -1), (1, -1), (-1, 0),
+                    (1, 0), (-1, 1), (0, 1), (1, 1))
+        ad_nodes = []
+        for ad in adjacent:
+            if 0 <= x + ad[0] < self.columns and 0 <= y + ad[1] < self.rows:
+                node = self.__nodes[(x + ad[0], y + ad[1])]
+                ad_nodes.append(node)
+                node.parent = self.__nodes[(x, y)]
+
+        return ad_nodes

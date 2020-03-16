@@ -1,11 +1,10 @@
 from visualizers.bar import BarGUI
-from visualizers.colors import *
 
 
 class QuickSort(BarGUI):
     def __init__(self):
         super().__init__(lambda i=0: self.quick_sort(0, len(self.get_bars())))
-        self.set_render_speed(100)
+        self.set_render_speed(1)
         self.display()
 
     def quick_sort(self, left, right):
