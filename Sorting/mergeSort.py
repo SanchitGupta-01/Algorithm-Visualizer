@@ -1,5 +1,4 @@
-from visualizers.bar import BarGUI
-from visualizers.colors import *
+from GUI.visualizers.bar import BarGUI
 
 
 class MergeSort(BarGUI):

@@ -1,7 +1,6 @@
 from tkinter import *
 from random import randrange
-from visualizers.colors import *
-import time
+from GUI.colors import *
 
 
 class BarGUI:

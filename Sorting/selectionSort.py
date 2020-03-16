@@ -1,4 +1,4 @@
-import visualizers.bar as bar
+import GUI.visualizers.bar as bar
 
 
 class SelectionSort(bar.BarGUI):

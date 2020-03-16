@@ -1,5 +1,4 @@
-import visualizers.bar as bar
-from visualizers.colors import *
+import GUI.visualizers.bar as bar
 
 
 class InsertionSort(bar.BarGUI):

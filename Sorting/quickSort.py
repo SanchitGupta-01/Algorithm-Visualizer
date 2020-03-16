@@ -1,4 +1,4 @@
-from visualizers.bar import BarGUI
+from GUI.visualizers.bar import BarGUI
 
 
 class QuickSort(BarGUI):

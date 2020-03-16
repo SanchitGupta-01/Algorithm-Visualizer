@@ -1,7 +1,4 @@
-from visualizers.grid import *
-from heapq import *
-
-# get start, end, blockage
+from GUI.visualizers.grid import *
 
 
 class PathFinder(GridGUI):
@@ -11,19 +8,36 @@ class PathFinder(GridGUI):
         # self.set_cost()
 
     def a_star_pathfinder(self, start, goal):
-        nodes: GridNodes = self.get_grid_nodes()
-        open_list = []
+        nodes: dict = self.get_grid_nodes().get_nodes()
+        open_list = sorted(list(nodes.keys()), key=lambda i=0: i.f)
         closed_list = []
-        heappush(open_list, start)
+
         while len(open_list) is not 0:
-            next_node = open_list.pop()
+            next_node = nodes[open_list.pop()]
             neighbors = next_node.get_neighbors()
-            for ad in neighbors:
-                if ad is nodes.get_goal_node():
-                    cost = 1
-                    ad.g = next_node.g + cost
-                    # ad.h =
-                    ad.f = ad.g
+
+            for node in neighbors:
+                if node is goal:
+                    pass
+                node = node.copy()
+                cost = 1
+                node.g = next_node.g + cost
+                node.h = 0
+                node.f = node.g + node.h
+                pos = node.position()
+
+                if pos in open_list and nodes[pos].f < node.f:
+                    continue
+
+                if pos in closed_list and node.f > nodes[pos]:
+                    continue
+                else:
+                    open_list.append(pos)
+                    open_list.sort(key=lambda i=0: i.f)
+
+            closed_list.append(next_node.position())
+
+        print(closed_list)
 
     @staticmethod
     def set_cost(buttons=0, cost=()):
