@@ -1,4 +1,4 @@
-from GUI.colors import *
+from GUI.resources.colors import *
 from tkinter import *
 
 

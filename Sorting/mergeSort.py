@@ -2,10 +2,10 @@ from GUI.visualizers.bar import BarGUI
 
 
 class MergeSort(BarGUI):
-    def __init__(self):
-        super().__init__(lambda i=0: self.merge_sort(0, len(self.get_bars())))
-        self.set_render_speed(1)
-        self.display()
+    def __init__(self, master, **kwargs):
+        super().__init__(master,
+                         lambda i=0: self.merge_sort(0, len(self.get_bars())),
+                         **kwargs)
 
     def merge_sort(self, left, right):
         middle = (left + right) // 2
@@ -40,6 +40,3 @@ class MergeSort(BarGUI):
             yield tuple(((k, j + middle + 1), True))
             j += 1
             k += 1
-
-
-MergeSort()

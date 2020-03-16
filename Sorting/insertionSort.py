@@ -2,9 +2,8 @@ import GUI.visualizers.bar as bar
 
 
 class InsertionSort(bar.BarGUI):
-    def __init__(self):
-        super().__init__(self.insertion_sort)
-        self.display()
+    def __init__(self, master, **kwargs):
+        super().__init__(master, self.insertion_sort, **kwargs)
 
     def insertion_sort(self):
         arr = self.get_bars()
@@ -18,6 +17,3 @@ class InsertionSort(bar.BarGUI):
                 j -= 1
             else:
                 yield tuple(((j-1, j), False))
-
-
-InsertionSort()

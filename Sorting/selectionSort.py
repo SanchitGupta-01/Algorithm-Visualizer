@@ -2,9 +2,8 @@ import GUI.visualizers.bar as bar
 
 
 class SelectionSort(bar.BarGUI):
-    def __init__(self):
-        super().__init__(self.selection_sort)
-        self.display()
+    def __init__(self, master, **kwargs):
+        super().__init__(master, self.selection_sort, **kwargs)
 
     # todo fix coloring
     def selection_sort(self):
@@ -21,6 +20,3 @@ class SelectionSort(bar.BarGUI):
             yield tuple(((i, min_index), True))
             arr[i], arr[min_index] = arr[min_index], arr[i]
             yield tuple(((i, min_index), False))
-
-
-SelectionSort()

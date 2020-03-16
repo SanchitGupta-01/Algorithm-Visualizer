@@ -1,26 +1,34 @@
 from tkinter import *
 from random import randrange
-from GUI.colors import *
+from GUI.resources.colors import *
 
 
-class BarGUI:
-    def __init__(self, func):
-        self.__root = Tk()
-        self.__root.geometry(f"300x100+{int(self.__root.winfo_screenwidth() / 2 - 150)}"
-                             f"+{int(self.__root.winfo_screenheight() / 2 - 100)}")
-        # ^^^ or self.__root.eval('tk::PlaceWindow . center')
-        self.__root.minsize(250, 90)
+class BarGUI(Frame):
+    def __init__(self, master, func, **kw):
+        # self.geometry(f"300x100+{int(self.winfo_screenwidth() / 2 - 150)}"
+        #                      f"+{int(self.winfo_screenheight() / 2 - 100)}")
+        # ^^^ or self.eval('tk::PlaceWindow . center')
+        # self.minsize(250, 90)
+        super().__init__(master, **kw)
         self.title = "bar"
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
 
-        self.__input_container = Frame(self.__root)
-        self.__input_container.pack(fill=BOTH, expand=YES)
+        self.__display_interface = Frame(self)
+        self.__display_interface.configure(bg='grey')
+        self.__display_interface.grid(row=0, column=0, sticky='nsew')
 
-        self.__display_interface = Frame(self.__root)
+        self.bind("<Configure>", self.__on_window_resize)
         self.__canvas = Canvas(self.__display_interface, bg='grey')
+        self.__canvas.pack(fill=BOTH, expand=True, padx=10, pady=10)
+
+        self.__input_container = Frame(self)
+        self.__input_container.grid(row=0, column=0, sticky='nsew')
+        self.__input_container.tkraise()
 
         # window width and height
-        self.height = self.__root.winfo_height()
-        self.width = self.__root.winfo_width()
+        self.height = self.winfo_height()
+        self.width = self.winfo_width()
         self.__canvas_height = 0
         self.__canvas_width = 0
 
@@ -33,7 +41,7 @@ class BarGUI:
         # for controlling color.....
         self.__render_max = 0
         self.__resized = False
-        self.__render_speed = IntVar(self.__canvas, 100)
+        self.__render_speed = IntVar(self.__canvas, 50)
         self.finished = False
 
         # sorting function to run
@@ -41,60 +49,59 @@ class BarGUI:
         self.__initiator()
 
     def __updater(self):
-        self.height = self.__root.winfo_height()
-        self.width = self.__root.winfo_width()
+        self.height = self.winfo_height()
+        self.width = self.winfo_width()
         self.__canvas_height = self.__canvas.winfo_height()
         self.__canvas_width = self.__canvas.winfo_width()
         if self.__resized and self.finished:
             print("update")
             self.draw(iter([]))
             self.__resized = False
-        self.__root.after(10, self.__updater)
+        self.after(10, self.__updater)
 
     def __initiator(self):
         Grid.columnconfigure(self.__input_container, 0, weight=1)
         Grid.columnconfigure(self.__input_container, 1, weight=2)
+        Grid.rowconfigure(self.__input_container, 0, weight=1)
         Grid.rowconfigure(self.__input_container, 2, weight=1)
 
         bc_label = Label(self.__input_container, text="Bars: ")
-        bc_label.grid(row=0, column=0, sticky='nsew')
+        bc_label.grid(row=0, column=0, sticky='nsew', pady=5)
 
-        e_label = Label(self.__input_container)  # unused
-        e_label.grid(row=1, column=0, columnspan=2)
+        e_label = Label(self.__input_container)
+        e_label.grid(row=1, column=0, columnspan=2, pady=5)
 
-        bc_entry = Entry(self.__input_container, highlightcolor=RED)
-        bc_entry.grid(row=0, column=1, sticky='nsew')
+        bc_entry = Entry(self.__input_container)
+        bc_entry.grid(row=0, column=1, sticky='ew', pady=5, padx=50)
 
-        make = Button(self.__input_container, text="Visualize!!!", command=lambda i=0: get_data(bc_entry))
-        make.grid(row=2, column=0, columnspan=2, sticky='nsew', padx=45)
+        make = Button(self.__input_container, text="Visualize!!!",
+                      command=lambda i=0: get_data(bc_entry))
+        make.grid(row=2, column=0, columnspan=2, pady=5, sticky='nsew')
 
         def get_data(bc):
             try:
                 self.__bar_count = int(bc.get())
-            except ValueError:
+                assert self.__bar_count != 0
+            except (ValueError, AssertionError):
                 e_label['text'] = "Sorry, Enter Valid Number!!!"
                 return
-            self.__root.title(self.title)
-            self.__input_container.forget()
+            # self.title(self.title)
+            # self.__input_container.forget()
             self.__create_bars()
+            self.__display_interface.tkraise()
 
         self.__updater()
 
     def __create_bars(self):
-        self.__root.geometry(f"600x400+{int(self.__root.winfo_screenwidth() / 2 - 300)}"
-                             f"+{int(self.__root.winfo_screenheight() / 2 - 250)}")
+        # self.geometry(f"600x400+{int(self.winfo_screenwidth() / 2 - 300)}"
+        #                      f"+{int(self.winfo_screenheight() / 2 - 250)}")
 
         self.__render_max = self.__bar_count
-        self.__display_interface.configure(bg='grey')
-        self.__display_interface.pack(fill=BOTH, expand=True)
-
-        self.__root.bind("<Configure>", self.__on_window_resize)
-        self.__canvas.pack(fill=BOTH, expand=True, padx=40, pady=30)
 
         # adding bars to array  ----- (None for future use.. if want to add bars as widgets)
         for i in range(self.__bar_count):
-            self.__bars.append((None, randrange(25,
-                                                self.__canvas.winfo_reqheight()) / self.__canvas.winfo_reqheight()))
+            self.__bars.append((None,
+                                randrange(25, self.__canvas.winfo_reqheight()) / self.__canvas.winfo_reqheight()))
 
         # rendering according to function to run
         self.__canvas.after(20, self.draw, self.__function_to_run())
@@ -158,11 +165,8 @@ class BarGUI:
     #     #     return
     #     #     self.__bar_draw.after(10, update)
 
-    def display(self):
-        self.__root.mainloop()
-
-    def set_title(self, s):
-        self.title = s
+    # def set_title(self, s):
+    #     self.title = s
 
     def set_render_speed(self, speed):
         self.__render_speed.set(speed)

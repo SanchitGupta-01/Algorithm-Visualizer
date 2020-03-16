@@ -2,9 +2,8 @@ import GUI.visualizers.bar as bar
 
 
 class BubbleSort(bar.BarGUI):
-    def __init__(self):
-        super().__init__(self.bubble_sort)
-        self.display()
+    def __init__(self, master, **kwargs):
+        super().__init__(master, self.bubble_sort, **kwargs)
 
     def bubble_sort(self):
         arr = self.get_bars()
@@ -17,6 +16,3 @@ class BubbleSort(bar.BarGUI):
                     yield tuple(((j, j+1), False))
                 else:
                     yield tuple(((j, j+1), False))
-
-
-BubbleSort()
