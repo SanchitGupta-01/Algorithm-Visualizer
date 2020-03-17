@@ -18,7 +18,7 @@ class BarGUI(Frame):
         self.__display_interface.configure(bg='grey')
         self.__display_interface.grid(row=0, column=0, sticky='nsew')
 
-        self.bind("<Configure>", self.__on_window_resize)
+        master.bind("<Configure>", self.__on_window_resize)
         self.__canvas = Canvas(self.__display_interface, bg='grey')
         self.__canvas.pack(fill=BOTH, expand=True, padx=10, pady=10)
 
@@ -41,7 +41,7 @@ class BarGUI(Frame):
         # for controlling color.....
         self.__render_max = 0
         self.__resized = False
-        self.__render_speed = IntVar(self.__canvas, 50)
+        self.__render_speed = IntVar(self.__canvas, 100)
         self.finished = False
 
         # sorting function to run

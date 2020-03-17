@@ -74,4 +74,4 @@ class PathFinder(GridGUI):
     #     frame.pack(side=BOTTOM)
 
 
-PathFinder().display()
+# PathFinder().display()

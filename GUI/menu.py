@@ -1,29 +1,28 @@
 from tkinter import *
 from GUI.resources.colors import PALE_BLUE_LILY
 from Sorting import selectionSort, radixSort, mergeSort, bubbleSort, countSort, heapSort, quickSort, insertionSort
-from Searching.A_Star.main import PathFinder
+from Searching.A_Star.a_star import PathFinder
 
 
 class Menu(Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent.get_root(), *args, **kwargs)
 
-        self.rowconfigure(0, weight=2)
-        self.rowconfigure(1, weight=6)
-        self.rowconfigure(2, weight=6)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=12)
 
         sort_label = Label(self, text='Sorting Algorithms', font='helvetica 20 bold',
-                           bg='lightgrey').grid(row=1, column=0, sticky='nsew')
+                           bg='lightgrey').grid(row=0, column=0, sticky='nsew')
 
         search_label = Label(self, text='Searching Algorithms', font='helvetica 20 bold',
-                             bg='lightgrey').grid(row=2, column=0, sticky='nsew')
+                             bg='lightgrey').grid(row=1, column=0, sticky='nsew')
 
         sorting = Frame(self, bg='darkgrey')
-        sorting.grid(row=1, column=1, sticky='nsew')
+        sorting.grid(row=0, column=1, sticky='nsew')
         searching = Frame(self, bg='darkgrey')
-        searching.grid(row=2, column=1, sticky='nsew')
+        searching.grid(row=1, column=1, sticky='nsew')
 
         sorting.rowconfigure(0, weight=1)
         sorting.rowconfigure(1, weight=1)

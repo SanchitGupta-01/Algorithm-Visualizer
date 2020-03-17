@@ -2,11 +2,12 @@ from GUI.resources.colors import *
 from tkinter import *
 
 
-class GridGUI:
-    def __init__(self, func):
+class GridGUI(Frame):
+    def __init__(self, master, func, **kw):
+        super().__init__(master, **kw)
         self.__root = Tk()
-        self.__root.geometry(f"300x100+{int(self.__root.winfo_screenwidth() / 2 - 150)}"
-                             f"+{int(self.__root.winfo_screenheight() / 2 - 100)}")
+        # self.__root.geometry(f"300x100+{int(self.__root.winfo_screenwidth() / 2 - 150)}"
+        #                      f"+{int(self.__root.winfo_screenheight() / 2 - 100)}")
         # or root.eval('tk::PlaceWindow . center')
         self.__root.minsize(250, 90)
         self.height = self.__root.winfo_height()
