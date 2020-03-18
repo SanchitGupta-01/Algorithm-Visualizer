@@ -103,8 +103,7 @@ class BarGUI(Frame):
         self.__bars = []
         self.__finished_bars = []
         for i in range(self.__bar_count):
-            self.__bars.append((None,
-                                randrange(25, self.__canvas.winfo_reqheight()) / self.__canvas.winfo_reqheight()))
+            self.__bars.append(randrange(25, self.__canvas.winfo_reqheight()) / self.__canvas.winfo_reqheight())
 
         # rendering according to function to run
         self.__canvas.after(self.__render_speed.get() + 20, self.draw, self.__function_to_run())
@@ -126,8 +125,6 @@ class BarGUI(Frame):
                 b_color = sorted_color
 
             if i in active:
-                if bar in self.__finished_bars and not swap:
-                    self.__render_max -= 1
                 if not swap:
                     b_color = active_color
                 else:
@@ -138,7 +135,7 @@ class BarGUI(Frame):
                 b_color = finished_color
 
             bd = self.__canvas
-            bd.create_rectangle(i * bar_width, bd.winfo_height() - bar[1] * bd.winfo_height(),
+            bd.create_rectangle(i * bar_width, bd.winfo_height() - bar * bd.winfo_height(),
                                 (i + 1) * bar_width, bd.winfo_height(),
                                 fill=b_color, outline=outline_color)
 
@@ -159,7 +156,7 @@ class BarGUI(Frame):
                 self.__render_bars(*prev)
             else:
                 self.__render_bars(*prev)
-            print('draw')
+            # print('draw')
         except StopIteration:
             self.__canvas.after(self.__render_speed.get(),
                                 self.__render_bars(remaining_color=GREY))

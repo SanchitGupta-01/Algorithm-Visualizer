@@ -1,6 +1,6 @@
 from tkinter import *
 from GUI.resources.colors import PALE_BLUE_LILY
-from Sorting import selectionSort, radixSort, mergeSort, bubbleSort, countSort, heapSort, quickSort, insertionSort
+from Sorting import selectionSort, radixSort, mergeSort, bubbleSort, countingSort, heapSort, quickSort, insertionSort
 from Searching.A_Star.a_star import PathFinder
 
 
@@ -24,11 +24,8 @@ class Menu(Frame):
         searching = Frame(self, bg='darkgrey')
         searching.grid(row=1, column=1, sticky='nsew')
 
-        sorting.rowconfigure(0, weight=1)
-        sorting.rowconfigure(1, weight=1)
-        sorting.columnconfigure(0, weight=1)
-        sorting.columnconfigure(1, weight=1)
-        sorting.columnconfigure(2, weight=1)
+        sorting.rowconfigure((0, 1, 2), weight=1)
+        sorting.columnconfigure((0, 1, 2), weight=1)
 
         Button(sorting, text='Bubble Sort', relief='flat', font='helvetica 15 bold', bg=PALE_BLUE_LILY,
                command=lambda i=0: parent.set_running_algorithm(bubbleSort.BubbleSort)).grid(row=0, column=0)
@@ -40,11 +37,13 @@ class Menu(Frame):
                command=lambda i=0: parent.set_running_algorithm(mergeSort.MergeSort)).grid(row=1, column=0)
         Button(sorting, text='Quick Sort', relief='flat', font='helvetica 15 bold', bg=PALE_BLUE_LILY,
                command=lambda i=0: parent.set_running_algorithm(quickSort.QuickSort)).grid(row=1, column=1)
+        Button(sorting, text='Counting Sort', relief='flat', font='helvetica 15 bold', bg=PALE_BLUE_LILY,
+               command=lambda i=0: parent.set_running_algorithm(countingSort.CountingSort)).grid(row=1, column=2)
+        Button(sorting, text='Radix Sort', relief='flat', font='helvetica 15 bold', bg=PALE_BLUE_LILY,
+               command=lambda i=0: parent.set_running_algorithm(radixSort.RadixSort)).grid(row=2, column=1)
 
         searching.rowconfigure(0, weight=1)
         searching.columnconfigure(0, weight=1)
 
         Button(searching, text='A* Pathfinder Algorithm', relief='flat', font='helvetica 15 bold',
                bg=PALE_BLUE_LILY, command=None).grid(row=0, column=0)  # parent.set_running_algorithm(PathFinder)
-
-
