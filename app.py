@@ -1,10 +1,13 @@
 from tkinter import *
 from GUI.menu import Menu
 from GUI.controller import Controller
+from GUI.visualizers.bar import BarGUI
 
 
 class Application:
     def __init__(self):
+        self.is_running = False
+        self.run: (None, BarGUI) = None
         self.running_algorithm = None
         self.__root = Tk()
         self.__root.geometry(f"900x600+{int(self.__root.winfo_screenwidth() / 2 - 450)}"
@@ -30,14 +33,15 @@ class Application:
         self.__root.mainloop()
 
     def __updater(self):
-        if self.running_algorithm is not None:
-            self.running_algorithm(self.__root).grid(row=1, column=0, rowspan=2, sticky='nsew')
-            self.running_algorithm = None
-        self.__root.after(10, self.__updater)
+        if self.run is not None and not self.is_running:
+            self.running_algorithm = self.run(self.__root)
+            self.running_algorithm.grid(row=1, column=0, rowspan=2, sticky='nsew')
+            self.is_running = True
+        self.__root.after(1, self.__updater)
 
     def set_running_algorithm(self, run):
-        if self.running_algorithm is None:
-            self.running_algorithm = run
+        if self.run is None:
+            self.run = run
 
     def get_root(self):
         return self.__root
@@ -45,7 +49,7 @@ class Application:
     def toggle_controller(self):
         if self.controller in self.__root.grid_slaves():
             self.controller.grid_forget()
-            self.controller_button['text'] = '>\n>\n>'
+            self.controller_button['text'] = '<\n<\n<'
         else:
             self.controller.grid(row=1, column=2, sticky='nsew')
             self.controller_button['text'] = '>\n>\n>'

@@ -21,6 +21,7 @@ class QuickSort(BarGUI):
 
             print(i+1, right - 1)
             arr[i + 1], arr[right - 1] = arr[right - 1], arr[i + 1]
+            self.add_finished_bar(i + 1)
 
             yield from self.quick_sort(left, i + 1)
             yield from self.quick_sort(i + 2, right)

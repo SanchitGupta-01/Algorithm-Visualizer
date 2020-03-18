@@ -9,12 +9,13 @@ class Controller(Frame):
         self.rowconfigure((0, 1, 2), weight=1)
         self.rowconfigure(3, weight=3)
 
-        start = Button(self, text='Start')
-        pause = Button(self, text='Pause')
-        stop = Button(self, text='Stop')
+        start = Button(self, text='Start', command=lambda i=0: parent.running_algorithm.start())
+        pause = Button(self, text='Pause', command=lambda i=0: parent.running_algorithm.pause())
+        stop = Button(self, text='Stop', command=lambda i=0: parent.running_algorithm.stop())
 
         render_frame = Frame(self, bg=self['bg'])
-        render_speed = Scale(render_frame, orient=HORIZONTAL, bg=self['bg'])
+        render_speed = Scale(render_frame, orient=HORIZONTAL, bg=self['bg'], from_=10, to=500,
+                             command=lambda i=0: parent.running_algorithm.set_render_speed(render_speed.get()))
         render_speed_label = Label(render_frame, text="Speed")
 
         start.grid(row=0, column=0, sticky='nsew')

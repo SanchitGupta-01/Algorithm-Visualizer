@@ -11,9 +11,12 @@ class InsertionSort(bar.BarGUI):
         for i in range(1, n):
             j = i
             while j > 0 and arr[j] < arr[j-1]:
-                yield tuple(((j-1, j), True))
-                arr[j], arr[j-1] = arr[j-1], arr[j]
-                yield tuple(((j-1, j), False))
+                yield tuple(((j - 1, j), True))
+                arr[j], arr[j - 1] = arr[j - 1], arr[j]
+                if i == n - 1:
+                    self.add_finished_bar(j)
+                yield tuple(((j - 1, j), False))
                 j -= 1
+
             else:
                 yield tuple(((j-1, j), False))
