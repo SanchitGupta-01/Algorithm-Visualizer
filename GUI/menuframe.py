@@ -4,7 +4,7 @@ from Sorting import selectionSort, radixSort, mergeSort, bubbleSort, countingSor
 from Searching.A_Star.a_star import PathFinder
 
 
-class Menu(Frame):
+class MenuFrame(Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent.get_root(), *args, **kwargs)
 

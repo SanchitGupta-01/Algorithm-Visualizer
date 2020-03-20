@@ -4,6 +4,7 @@ import GUI.visualizers.bar as bar
 class BubbleSort(bar.BarGUI):
     def __init__(self, master, **kwargs):
         super().__init__(master, self.bubble_sort, **kwargs)
+        self.title = 'Bubble Sort Algorithm'
 
     def bubble_sort(self):
         arr = self.get_bars()

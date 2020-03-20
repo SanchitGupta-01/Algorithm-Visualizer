@@ -2,9 +2,12 @@ from GUI.visualizers.grid import *
 
 
 class PathFinder(GridGUI):
-    def __init__(self):
-        super().__init__(lambda i=0: self.a_star_pathfinder(self.get_grid_nodes().get_start_node(),
-                                                            self.get_grid_nodes().get_goal_node()))
+    def __init__(self, master, **kwargs):
+        super().__init__(master,
+                         lambda i=0: self.a_star_pathfinder(self.get_grid_nodes().get_start_node(),
+                                                            self.get_grid_nodes().get_goal_node()),
+                         **kwargs)
+        self.title = 'A* Pathfinder Algorithm'
         # self.set_cost()
 
     def a_star_pathfinder(self, start, goal):

@@ -4,11 +4,12 @@ from GUI.visualizers.bar import BarGUI
 class CountingSort(BarGUI):
     def __init__(self, master, **kw):
         super().__init__(master,
-                         lambda i=0: self.counting_sort(),
+                         lambda i=0: self.counting_sort(self, self.get_bars()),
                          **kw)
+        self.title = 'Counting Sort Algorithm'
 
-    def counting_sort(self):
-        bars = self.get_bars()
+    @classmethod
+    def counting_sort(cls, self, bars):
         count_dict = dict([(bar, 0) for bar in bars])
 
         for i, num in enumerate(bars):

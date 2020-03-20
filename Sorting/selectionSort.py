@@ -4,6 +4,7 @@ import GUI.visualizers.bar as bar
 class SelectionSort(bar.BarGUI):
     def __init__(self, master, **kwargs):
         super().__init__(master, self.selection_sort, **kwargs)
+        self.title = 'Selection Sort Algorithm'
 
     # todo fix coloring
     def selection_sort(self):

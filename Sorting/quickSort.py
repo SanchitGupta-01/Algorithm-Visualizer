@@ -3,7 +3,10 @@ from GUI.visualizers.bar import BarGUI
 
 class QuickSort(BarGUI):
     def __init__(self, master, **kwargs):
-        super().__init__(master, lambda i=0: self.quick_sort(0, len(self.get_bars())), **kwargs)
+        super().__init__(master,
+                         lambda i=0: self.quick_sort(0, len(self.get_bars())),
+                         **kwargs)
+        self.title = 'Quick Sort Algorithm'
 
     def quick_sort(self, left, right):
         if right > left:

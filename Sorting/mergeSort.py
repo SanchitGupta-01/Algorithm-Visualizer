@@ -6,6 +6,7 @@ class MergeSort(BarGUI):
         super().__init__(master,
                          lambda i=0: self.merge_sort(0, len(self.get_bars())),
                          **kwargs)
+        self.title = 'Merge Sort Algorithm'
 
     def merge_sort(self, left, right):
         middle = (left + right) // 2

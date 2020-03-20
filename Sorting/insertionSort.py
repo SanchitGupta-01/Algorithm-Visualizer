@@ -4,6 +4,7 @@ import GUI.visualizers.bar as bar
 class InsertionSort(bar.BarGUI):
     def __init__(self, master, **kwargs):
         super().__init__(master, self.insertion_sort, **kwargs)
+        self.title = 'Insertion Sort Algorithm'
 
     def insertion_sort(self):
         arr = self.get_bars()
