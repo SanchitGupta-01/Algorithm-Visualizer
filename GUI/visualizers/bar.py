@@ -195,14 +195,16 @@ class BarGUI(Frame):
         return self.__bars
 
     def start(self):
-        self.__run_state = True
+        if not self.__bar_count == 0:
+            self.__run_state = True
 
     def pause(self):
         self.__run_state = False
 
     def stop(self):
-        if not self.finished:
-            self.__stop_draw = True
-        self.__run_state = False
-        self.finished = False
-        self.__create_bars()
+        if self.__run_state:
+            if not self.finished:
+                self.__stop_draw = True
+            self.__run_state = False
+            self.finished = False
+            self.__create_bars()

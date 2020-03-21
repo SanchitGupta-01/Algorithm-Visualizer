@@ -8,7 +8,7 @@ class Application:
     def __init__(self):
         self.is_running = False
         self.run: (None, BarGUI) = None
-        self.running_algorithm = None
+        self.running_algorithm: (None, BarGUI) = None
         self.__root = Tk()
         self.__root.geometry(f"900x600+{int(self.__root.winfo_screenwidth() / 2 - 450)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 350)}")
@@ -36,10 +36,18 @@ class Application:
 
         self.__root.mainloop()
 
+    def back_to_menu(self):
+        if self.running_algorithm is not None:
+            self.running_algorithm.destroy()
+            self.__algorithm_title['text'] = ''
+            self.__title['text'] = 'Algorithm Visualization'
+            self.is_running = False
+
     def __updater(self):
         if self.run is not None and not self.is_running:
             self.running_algorithm = self.run(self.__root)
             self.running_algorithm.grid(row=1, column=0, rowspan=2, sticky='nsew')
+            self.run = None
             self.__algorithm_title['text'] = self.running_algorithm.title
             self.__title['text'] += '  -'
             self.__algorithm_title.pack(fill=BOTH, expand=YES, side='left')
