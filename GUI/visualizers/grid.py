@@ -6,9 +6,6 @@ class GridGUI(Frame):
     def __init__(self, master, func, **kw):
         super().__init__(master, **kw)
         self.__root = Tk()
-        # self.__root.geometry(f"300x100+{int(self.__root.winfo_screenwidth() / 2 - 150)}"
-        #                      f"+{int(self.__root.winfo_screenheight() / 2 - 100)}")
-        # or root.eval('tk::PlaceWindow . center')
         self.__root.minsize(250, 90)
         self.height = self.__root.winfo_height()
         self.width = self.__root.winfo_width()
@@ -50,10 +47,11 @@ class GridGUI(Frame):
         c_entry = Entry(self.__input_container)
         c_entry.grid(row=1, column=1, sticky='nsew')
 
-        e_label = Label(self.__input_container)  # unused error label
+        e_label = Label(self.__input_container)  # error label
         e_label.grid(row=2, column=0, columnspan=2)
 
-        make = Button(self.__input_container, text="Make Grid", command=lambda i=0: __get_data(r_entry, c_entry))
+        make = Button(self.__input_container, text="Make Grid",
+                      command=lambda i=0: __get_data(r_entry, c_entry))
         make.grid(row=3, column=0, columnspan=2, sticky='nsew', padx=45)
 
         def __get_data(r, c):
@@ -74,12 +72,9 @@ class GridGUI(Frame):
         self.__updater()
 
     def __create_grid(self):
-        self.__root.geometry(f"500x500+{int(self.__root.winfo_screenwidth() / 2 - 250)}"
+        self.__root.geometry(f"500x500+"
+                             f"{int(self.__root.winfo_screenwidth() / 2 - 250)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 300)}")
-
-        # can remove this (two loops) and just set the canvas bg as black and change the padding for buttons as req.
-        # self.__create_lines()
-
         self.__canvas.after(50, self.__set_grid)
         self.__canvas.configure(bg='black')
         self.__canvas.bind("<Configure>", self.__on_grid_resize)
@@ -88,33 +83,14 @@ class GridGUI(Frame):
     def __set_grid(self):
         for i in range(self.rows):
             for j in range(self.columns):
-                # button = Button(self.__canvas, bg='grey', width=int(self.width / self.rows) + 1,
-                #                 height=int(self.height / self.columns) + 1, relief=FLAT,
-                #                 command=lambda: self.on_button_click)
-                # bs.append(button)
-                # Grid.rowconfigure(self.__canvas, i, weight=1)
-                # Grid.columnconfigure(self.__canvas, j, weight=1)
-                # button.bind("<Enter>", lambda e=0: e.widget.config(bg='lightgrey'))
-                # button.bind("<Leave>", lambda e=1: e.widget.config(bg='grey'))
-                # button.grid(row=i, column=j, padx=1, pady=1, sticky='nsew')
                 width = self.width / self.columns
                 height = self.height / self.rows
-                self.__canvas.create_rectangle(width * j, height * i, width * (j + 1), height * (i + 1),
-                                               fill=self.__grid_nodes.get_color(i, j), outline='black')
-
-    # def __create_lines(self):
-    #     for j in range(0, self.height, int(self.height / self.columns)):
-    #         self.__canvas.create_line(0, j, self.width, j, fill='black')
-    #
-    #     for i in range(0, self.width, int(self.width / self.rows)):
-    #         self.__canvas.create_line(i, 0, i, self.height, fill='black')
+                self.__canvas.create_rectangle(width * j, height * i,
+                                               width * (j + 1), height * (i + 1),
+                                               fill=self.__grid_nodes.get_color(i, j),
+                                               outline='black')
 
     def __on_grid_resize(self, e):
-        # w_scale = e.width / self.width
-        # h_scale = e.height / self.height
-        # self.width = e.width
-        # self.height = e.height
-        # self.__canvas.scale('all', 0, 0, w_scale, h_scale)
         self.resized = True
 
     def add_controls(self):
@@ -131,13 +107,6 @@ class GridGUI(Frame):
 
     def display(self):
         self.__root.mainloop()
-    #
-    # def set_button_action(self, action: types.FunctionType):
-    #     self.on_button_click.__code__ = action.__code__
-    #
-    # @staticmethod
-    # def on_button_click():
-    #     pass
 
 
 class GridNodes:
