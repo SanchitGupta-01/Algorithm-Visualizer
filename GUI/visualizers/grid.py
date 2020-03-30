@@ -111,8 +111,8 @@ class GridGUI(Frame):
 
 class GridNodes:
     class _Node:
-        def __init__(self, master, y_index, x_index, g, color):
-            self.g, self.h, self.f = g, 99999999, 99999999
+        def __init__(self, master, y_index, x_index, g_cost, color):
+            self.g_cost, self.h, self.f = g_cost, 99999999, 99999999
             self.master: GridNodes = master
             self.parent = None
             self.y_index = y_index

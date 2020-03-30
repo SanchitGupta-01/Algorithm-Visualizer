@@ -77,12 +77,19 @@ class MenuFrame(Frame):
                command=lambda i=0: parent.set_running_algorithm(countingSort.CountingSort)
                ).grid(row=1, column=2)
         Button(sorting,
-               text='Radix Sort',
+               text='Heap Sort',
                relief='flat',
                font='helvetica 15 bold',
                bg=button_color,
                command=lambda i=0: parent.set_running_algorithm(radixSort.RadixSort)
-               ).grid(row=2, column=1)
+               ).grid(row=2, column=0)
+        Button(sorting,
+               text='Radix Sort',
+               relief='flat',
+               font='helvetica 15 bold',
+               bg=button_color,
+               command=lambda i=0: parent.set_running_algorithm(heapSort.HeapSort)
+               ).grid(row=2, column=2)
 
         searching.rowconfigure(0, weight=1)
         searching.columnconfigure(0, weight=1)
