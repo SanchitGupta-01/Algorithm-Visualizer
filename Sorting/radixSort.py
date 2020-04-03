@@ -10,4 +10,4 @@ class RadixSort(BarGUI):
         self.title = 'Radix Sort Algorithm'
 
     def radix_sort(self):
-        CountingSort.counting_sort(self, self.get_bars())
+        return CountingSort.counting_sort(self, self.get_bars())

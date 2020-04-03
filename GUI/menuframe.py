@@ -1,6 +1,7 @@
 from tkinter import *
 from GUI.resources.colors import PALE_BLUE_LILY
-from Sorting import selectionSort, radixSort, mergeSort, bubbleSort, countingSort, heapSort, quickSort, insertionSort
+from Sorting import selectionSort, radixSort, mergeSort, bubbleSort, countingSort, \
+    heapSort, quickSort, insertionSort, gnomeSort
 from Searching.A_Star.a_star import PathFinder
 
 
@@ -81,14 +82,21 @@ class MenuFrame(Frame):
                relief='flat',
                font='helvetica 15 bold',
                bg=button_color,
-               command=lambda i=0: parent.set_running_algorithm(radixSort.RadixSort)
+               command=lambda i=0: parent.set_running_algorithm(heapSort.HeapSort)
                ).grid(row=2, column=0)
+        Button(sorting,
+               text='Gnome Sort',
+               relief='flat',
+               font='helvetica 15 bold',
+               bg=button_color,
+               command=lambda i=0: parent.set_running_algorithm(gnomeSort.GnomeSort)
+               ).grid(row=2, column=1)
         Button(sorting,
                text='Radix Sort',
                relief='flat',
                font='helvetica 15 bold',
                bg=button_color,
-               command=lambda i=0: parent.set_running_algorithm(heapSort.HeapSort)
+               command=lambda i=0: parent.set_running_algorithm(radixSort.RadixSort)
                ).grid(row=2, column=2)
 
         searching.rowconfigure(0, weight=1)
