@@ -1,13 +1,14 @@
 from GUI.visualizers.grid import *
+from Searching.A_Star.node import Node
 
 
-class PathFinder(GridGUI):
+class AStarPathfinder(GridGUI):
     def __init__(self, master, **kwargs):
         super().__init__(master,
                          lambda i=0: self.a_star_pathfinder(
                              self.get_grid_nodes().get_start_node(),
                              self.get_grid_nodes().get_goal_node()
-                         ), **kwargs)
+                         ), self.create_node, **kwargs)
         self.title = 'A* Pathfinder Algorithm'
         # self.set_cost()
 
@@ -44,6 +45,10 @@ class PathFinder(GridGUI):
         print(closed_list)
 
     @staticmethod
+    def create_node(master, y_index, x_index, g_cost, color):
+        return Node(master, y_index, x_index, g_cost, color)
+
+    @staticmethod
     def set_cost(buttons=0, cost=()):
         pass
 
@@ -76,6 +81,3 @@ class PathFinder(GridGUI):
     #     end = Button(frame, text='Destination', command=self.set_button_action(end_button_action))\
     #         .pack(side=LEFT)
     #     frame.pack(side=BOTTOM)
-
-
-# PathFinder().display()

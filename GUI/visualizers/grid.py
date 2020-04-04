@@ -3,34 +3,45 @@ from tkinter import *
 
 
 class GridGUI(Frame):
-    def __init__(self, master, func, **kw):
+    def __init__(self, master, func, node, **kw):
         super().__init__(master, **kw)
-        self.__root = Tk()
-        self.__root.minsize(250, 90)
-        self.height = self.__root.winfo_height()
-        self.width = self.__root.winfo_width()
+        self.node = node
+        self.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.height = self.winfo_height()
+        self.width = self.winfo_width()
         self.__title = "grid"
 
-        self.__input_container = Frame(self.__root)
+        master.bind("<Configure>", lambda i=0: self.__on_grid_resize())
+
+        self.__input_container = Frame(self)
         self.__input_container.pack(fill=BOTH, expand=YES)
 
-        self.__canvas = Canvas(self.__root)
+        self.__canvas = Canvas(self)
 
         self.rows = 0
         self.columns = 0
         self.__grid_nodes: (GridNodes, None) = None
+
         self.resized = False
+        self.__run_state = False
+        self.finished = False
+        self.__stop_draw = False
+        self.__render_speed = IntVar(self.__canvas, 10)
 
         self.__initiator()
 
     def __updater(self):
-        self.height = self.__root.winfo_height()
-        self.width = self.__root.winfo_width()
+        self.height = self.winfo_height()
+        self.width = self.winfo_width()
         if self.resized:
             self.__canvas.delete('all')
+            if self.__stop_draw:
+                self.__grid_nodes = GridNodes(node=self.node, rows=self.rows,
+                                              columns=self.columns, color=GREY)
             self.__set_grid()
             self.resized = False
-        self.__root.after(10 + (self.columns * self.rows) // 10, self.__updater)
+        self.after(self.__render_speed.get(), self.__updater)
 
     def __initiator(self):
         Grid.columnconfigure(self.__input_container, 0, weight=1)
@@ -63,8 +74,8 @@ class GridGUI(Frame):
             except ValueError:
                 e_label['text'] = "Sorry, Enter Valid Numbers!!!"
                 return
-            self.__grid_nodes = GridNodes(rows=self.rows, columns=self.columns, color=GREY)
-            self.__root.title(self.__title)
+            self.__grid_nodes = GridNodes(node=self.node, rows=self.rows,
+                                          columns=self.columns, color=GREY)
             self.__input_container.forget()
             self.__create_grid()
             self.add_controls()
@@ -72,12 +83,8 @@ class GridGUI(Frame):
         self.__updater()
 
     def __create_grid(self):
-        self.__root.geometry(f"500x500+"
-                             f"{int(self.__root.winfo_screenwidth() / 2 - 250)}"
-                             f"+{int(self.__root.winfo_screenheight() / 2 - 300)}")
         self.__canvas.after(50, self.__set_grid)
         self.__canvas.configure(bg='black')
-        self.__canvas.bind("<Configure>", self.__on_grid_resize)
         self.__canvas.pack(fill=BOTH, expand=True)
 
     def __set_grid(self):
@@ -90,42 +97,38 @@ class GridGUI(Frame):
                                                fill=self.__grid_nodes.get_color(i, j),
                                                outline='black')
 
-    def __on_grid_resize(self, e):
+    def __on_grid_resize(self):
         self.resized = True
 
     def add_controls(self):
         pass
 
-    def set_title(self, s):
-        self.__title = s
-
-    def get_root(self):
-        return self.__root
-
     def get_grid_nodes(self):
         return self.__grid_nodes
 
-    def display(self):
-        self.__root.mainloop()
+    def set_render_speed(self, speed):
+        self.__render_speed.set(speed)
+
+    def get_render_speed(self):
+        return self.__render_speed.get()
+
+    def start(self):
+        if not (self.rows == 0 or self.columns == 0):
+            self.__run_state = True
+
+    def pause(self):
+        self.__run_state = False
+
+    def stop(self):
+        if not self.finished:
+            self.__stop_draw = True
+        self.__run_state = False
+        self.finished = False
+        self.__set_grid()
 
 
 class GridNodes:
-    class _Node:
-        def __init__(self, master, y_index, x_index, g_cost, color):
-            self.g_cost, self.h, self.f = g_cost, 99999999, 99999999
-            self.master: GridNodes = master
-            self.parent = None
-            self.y_index = y_index
-            self.x_index = x_index
-            self.color = color
-
-        def position(self):
-            return self.x_index, self.y_index
-
-        def get_neighbors(self):
-            return GridNodes._get_neighbors(self.master, self.x_index, self.y_index)
-
-    def __init__(self, rows, columns, start=None, goal=None, color=GREY):
+    def __init__(self, node, rows, columns, start=None, goal=None, color=GREY):
         self.rows = rows
         self.columns = columns
         self.__goal_node = goal
@@ -133,7 +136,7 @@ class GridNodes:
         self.__nodes = {}
         for i in range(rows):
             for j in range(columns):
-                self.__nodes[(i, j)] = self._Node(self, i, j, 1, color)
+                self.__nodes[(i, j)] = node(self, i, j, 1, color)
 
     def get_nodes(self):
         assert self.__nodes is not None, 'nodes not set'
@@ -161,8 +164,7 @@ class GridNodes:
     def get_distance():
         pass
 
-    @staticmethod
-    def _get_neighbors(self, x, y):
+    def get_neighbors(self, x, y):
         adjacent = ((-1, -1), (0, -1), (1, -1), (-1, 0),
                     (1, 0), (-1, 1), (0, 1), (1, 1))
         ad_nodes = []
