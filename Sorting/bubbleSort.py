@@ -14,7 +14,7 @@ class BubbleSort(bar.BarGUI):
                 if arr[j] > arr[j + 1]:
                     yield tuple(((j, j + 1), True))
                     arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                    yield tuple(((j, j + 1), False))
+                    yield tuple(((j, j + 1), True))
                 else:
                     yield tuple(((j, j+1), False))
             self.add_finished_bar(n - i - 1)

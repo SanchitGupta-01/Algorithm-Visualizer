@@ -14,7 +14,12 @@ class BarGUI(Frame):
         self.__display_interface.configure(bg='grey')
         self.__display_interface.grid(row=0, column=0, sticky='nsew')
 
-        master.bind("<Configure>", self.__on_window_resize)
+        master.bind("<Configure>", lambda i=0: self.__on_window_resize())
+        master.bind("<space>", lambda i=0: self.pause() if self.__run_state else self.start())
+        master.bind("<Return>", lambda i=0: self.start())
+        master.bind("<Right>", lambda i=0: self.next_step())
+        master.bind("<Left>", lambda i=0: self.prev_step())
+
         self.__canvas = Canvas(self.__display_interface, bg='grey')
         self.__canvas.pack(fill=BOTH, expand=True, padx=10, pady=10)
 
@@ -29,23 +34,21 @@ class BarGUI(Frame):
 
         self.__bar_count = 0
         self.__bars = []
+        self.prev_states = [(tuple(), False, GREY)]
         self.__finished_bars = []
 
-        self.__render_max = 0
         self.__resized = False
         self.__render_speed = IntVar(self.__canvas, 10)
         self.finished = False
         self.__run_state = False
         self.__stop_draw = False
+        self.step = False
+        self.step_index = 0
 
         self.__function_to_run = func
         self.__initiator()
 
     def __updater(self):
-        self.height = self.winfo_height()
-        self.width = self.winfo_width()
-        self.__canvas_height = self.__canvas.winfo_height()
-        self.__canvas_width = self.__canvas.winfo_width()
         if self.__resized and self.finished:
             print("update")
             self.draw(iter([]))
@@ -123,18 +126,31 @@ class BarGUI(Frame):
                                 (i + 1) * bar_width, bd.winfo_height(),
                                 fill=b_color, outline=outline_color)
 
-    def __on_window_resize(self, e):
+    def __on_window_resize(self):
         self.__resized = True
 
-    def draw(self, states: iter, prev=(tuple(), False, GREY)):
+    def draw(self, states: iter):
         try:
             if self.__stop_draw:
                 raise StopIteration
-            if self.__run_state:
-                prev = next(states)
-                self.__render_bars(*prev)
+
+            if self.step_index == len(self.prev_states) - 1:
+                if self.__run_state or self.step:
+                    prev = next(states)
+                    self.prev_states.append(prev)
+                    self.__render_bars(*prev)
+                    self.step = False
+                    if not self.step:
+                        self.step_index += 1
+                else:
+                    self.__render_bars(*self.prev_states[self.step_index - 1])
             else:
-                self.__render_bars(*prev)
+                if self.__run_state:
+                    self.next_step()
+                self.__render_bars(*self.prev_states[self.step_index - 1])
+                if self.step:
+                    self.step = False
+
         except StopIteration:
             self.__canvas.after(self.__render_speed.get(),
                                 self.__render_bars(remaining_color=GREY))
@@ -142,7 +158,7 @@ class BarGUI(Frame):
             self.__stop_draw = False
             print("stop/completed")
             return
-        self.__canvas.after(self.__render_speed.get(), self.draw, states, prev)
+        self.__canvas.after(self.__render_speed.get(), self.draw, states)
 
     def set_render_speed(self, speed):
         self.__render_speed.set(speed)
@@ -167,9 +183,35 @@ class BarGUI(Frame):
         self.__run_state = False
 
     def stop(self):
-        if self.__run_state:
-            if not self.finished:
-                self.__stop_draw = True
-            self.__run_state = False
-            self.finished = False
-            self.__create_bars()
+        if not self.finished:
+            self.__stop_draw = True
+        self.__run_state = False
+        self.finished = False
+        self.__create_bars()
+
+    def next_step(self):
+        if (self.finished or self.__run_state) and self.step:
+            return
+        self.pause()
+        i = self.step_index - 1
+        if i < 0:
+            return
+        if not i < len(self.prev_states) - 1:
+            cur = self.prev_states[i][0]
+            self.__bars[cur[0]], self.__bars[cur[1]] = self.__bars[cur[1]], self.__bars[cur[0]]
+        self.step_index += 1
+        self.step = True
+
+    def prev_step(self):
+        if (self.finished or self.__run_state) and self.step:
+            return
+        self.pause()
+        i = self.step_index - 1
+        if i == 0:
+            return
+        if self.prev_states[i - 1][1]:
+            prev = self.prev_states[i - 1][0]
+            self.__bars[prev[0]], self.__bars[prev[1]] = self.__bars[prev[1]], self.__bars[prev[0]]
+
+        self.step_index -= 1
+        self.step = True
