@@ -69,11 +69,14 @@ class Application:
             self.__algorithm_title.pack(fill=BOTH, expand=YES, side='left')
             self.is_running = True
 
-        self.__root.after(1, self.__updater)
+        self.__root.after(50, self.__updater)
 
     def set_running_algorithm(self, run):
         if self.run is None:
             self.run = run
+
+    def set_title(self, s):
+        self.__algorithm_title['text'] = s
 
     def get_root(self):
         return self.__root
