@@ -2,8 +2,8 @@ from tkinter import *
 
 
 class Controller(Frame):
-    def __init__(self, parent, *args, **kwargs):
-        super().__init__(parent.get_root(), *args, **kwargs)
+    def __init__(self, master, parent, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure((0, 1, 2, 3), weight=1)

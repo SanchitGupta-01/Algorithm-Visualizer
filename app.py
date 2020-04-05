@@ -1,4 +1,6 @@
 from tkinter import *
+
+from GUI.description import Description
 from GUI.menuframe import MenuFrame
 from GUI.controller import Controller
 from GUI.visualizers.bar import BarGUI
@@ -14,17 +16,7 @@ class Application:
                              f"{int(self.__root.winfo_screenwidth() / 2 - 450)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 350)}")
 
-        self.interface = MenuFrame(self, bg='grey')
-
-        self.controller = Controller(self, bg='lightgrey')
-        self.controller_button = Button(self.__root,
-                                        text='<\n<\n<',
-                                        width=1,
-                                        bg='darkgrey',
-                                        relief='flat',
-                                        command=lambda i=0: self.toggle_controller())
-
-        Grid.columnconfigure(self.__root, 0, weight=1)
+        Grid.columnconfigure(self.__root, (0, 1), weight=1)
         Grid.rowconfigure(self.__root, 0, weight=1)
         Grid.rowconfigure(self.__root, 1, weight=5)
 
@@ -40,12 +32,53 @@ class Application:
                                        anchor='w',
                                        bg='grey')
 
-        self.__title.pack(fill=BOTH, expand=YES, side='left')
-        self.__title_bar.grid(row=0, column=0,
-                              columnspan=3, sticky='nsew')
+        self.interface = Frame(self.__root)
 
-        self.controller_button.grid(row=1, column=1, sticky='ns')
-        self.interface.grid(row=1, column=0, sticky='nsew')
+        self.description_frame = Frame(self.interface)
+        self.description = Description(self.description_frame)
+        self.description_button = Button(self.description_frame,
+                                         text='>\n>\n>',
+                                         width=1,
+                                         bg='darkgrey',
+                                         relief='flat',
+                                         command=lambda e=0: self.toggle_controller('description'))
+
+        self.menu = MenuFrame(self.interface, self, bg='grey')
+
+        self.controller_frame = Frame(self.interface)
+        self.controller = Controller(self.controller_frame, self, bg='lightgrey')
+        self.controller_button = Button(self.controller_frame,
+                                        text='<\n<\n<',
+                                        width=1,
+                                        bg='darkgrey',
+                                        relief='flat',
+                                        command=lambda e=0: self.toggle_controller('controller'))
+
+        self.__title_bar.grid(row=0, column=0, columnspan=2, sticky='nsew')
+        self.__title.pack(fill=BOTH, expand=YES, side='left')
+        self.__algorithm_title.pack(fill=BOTH, expand=YES, side='left')
+
+        self.interface.grid(row=1, column=0, columnspan=2, sticky='nsew')
+
+        self.interface.rowconfigure(0, weight=1)
+        self.interface.columnconfigure(1, weight=1)
+
+        self.description_frame.grid(row=0, column=0, sticky='nsew')
+        self.menu.grid(row=0, column=1, sticky='nsew')
+        self.controller_frame.grid(row=0, column=2, sticky='nsew')
+
+        self.description_frame.rowconfigure(0, weight=1)
+        self.controller_frame.rowconfigure(0, weight=1)
+        # self.description.columnconfigure(0, weight=1)
+
+        self.description_button.grid(row=0, column=1, sticky='ns')
+        self.controller_button.grid(row=0, column=0, sticky='ns')
+
+        def description_resize(e):
+            self.description['width'] += 1
+            print(self.description['width'])
+
+        self.description_button.bind("<B1-Motion>", description_resize)
 
         self.__updater()
 
@@ -60,13 +93,11 @@ class Application:
 
     def __updater(self):
         if self.run is not None and not self.is_running:
-            self.running_algorithm = self.run(self.__root)
-            self.running_algorithm.grid(row=1, column=0,
-                                        rowspan=2, sticky='nsew')
+            self.running_algorithm = self.run(self.interface)
+            self.running_algorithm.grid(row=0, column=1, sticky='nsew')
             self.run = None
             self.__algorithm_title['text'] = self.running_algorithm.title
             self.__title['text'] += '  -'
-            self.__algorithm_title.pack(fill=BOTH, expand=YES, side='left')
             self.is_running = True
 
         self.__root.after(50, self.__updater)
@@ -81,13 +112,21 @@ class Application:
     def get_root(self):
         return self.__root
 
-    def toggle_controller(self):
-        if self.controller in self.__root.grid_slaves():
-            self.controller.grid_forget()
-            self.controller_button['text'] = '<\n<\n<'
-        else:
-            self.controller.grid(row=1, column=2, sticky='nsew')
-            self.controller_button['text'] = '>\n>\n>'
+    def toggle_controller(self, s):
+        if s == 'controller':
+            if self.controller in self.controller_frame.grid_slaves():
+                self.controller.grid_forget()
+                self.controller_button['text'] = '<\n<\n<'
+            else:
+                self.controller.grid(row=0, column=1, sticky='nsew')
+                self.controller_button['text'] = '>\n>\n>'
+        elif s == 'description':
+            if self.description in self.description_frame.grid_slaves():
+                self.description.grid_forget()
+                self.description_button['text'] = '>\n>\n>'
+            else:
+                self.description.grid(row=0, column=0, sticky='nsew')
+                self.description_button['text'] = '<\n<\n<'
 
 
 Application()
