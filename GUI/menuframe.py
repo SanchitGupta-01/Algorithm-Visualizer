@@ -1,5 +1,4 @@
 from tkinter import *
-from app import Application
 from GUI.resources.colors import PALE_BLUE_LILY
 from Sorting.Bubble_Sort.bubbleMenu import BubbleMenu
 from Sorting import selectionSort, radixSort, mergeSort, countingSort, \
@@ -9,7 +8,7 @@ from Sorting import selectionSort, radixSort, mergeSort, countingSort, \
 class MenuFrame(Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent.get_root(), *args, **kwargs)
-        self.parent: Application = parent
+        self.parent = parent
 
         self.rowconfigure((0, 1), weight=1)
         self.columnconfigure(0, weight=1)

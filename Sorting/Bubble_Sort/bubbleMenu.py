@@ -1,11 +1,10 @@
 from tkinter import *
-from app import Application
 from GUI.resources.colors import PALE_BLUE_LILY
 from Sorting.Bubble_Sort.bubbleSort import BubbleSort
 
 
 class BubbleMenu(Frame):
-    def __init__(self, master: Application, *args, **kwargs):
+    def __init__(self, master, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
 
         self.rowconfigure(1, weight=1)

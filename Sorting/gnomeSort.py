@@ -16,8 +16,8 @@ class GnomeSort(BarGUI):
             if index == 0:
                 index = index + 1
             if arr[index] >= arr[index - 1]:
-                index = index + 1
                 yield tuple(((index - 1, index), False))
+                index = index + 1
             else:
                 yield tuple(((index, index - 1), True))
                 arr[index], arr[index - 1] = arr[index - 1], arr[index]

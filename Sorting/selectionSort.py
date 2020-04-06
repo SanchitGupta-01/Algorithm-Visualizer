@@ -6,7 +6,6 @@ class SelectionSort(bar.BarGUI):
         super().__init__(master, self.selection_sort, **kwargs)
         self.title = 'Selection Sort Algorithm'
 
-    # todo fix coloring
     def selection_sort(self):
         arr = self.get_bars()
         n = len(arr)
@@ -21,3 +20,4 @@ class SelectionSort(bar.BarGUI):
             yield tuple(((i, min_index), True))
             arr[i], arr[min_index] = arr[min_index], arr[i]
             yield tuple(((i, min_index), False))
+            self.add_finished_bar(i)

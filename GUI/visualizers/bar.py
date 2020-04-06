@@ -193,7 +193,8 @@ class BarGUI(Frame):
     def next_step(self):
         if self.finished or self.step:
             return
-        self.pause()
+        if not self.__run_state:
+            self.pause()
         i = self.step_index
         if i < 0 or i >= len(self.prev_states):
             return
