@@ -157,8 +157,7 @@ class BarGUI(Frame):
             self.finished = True if not self.__stop_draw else False
             self.__stop_draw = False
             print("stop/completed")
-            if self.finished:
-                return
+            return
         self.__canvas.after(self.__render_speed.get(), self.draw, states)
 
     def set_render_speed(self, speed):
@@ -188,6 +187,7 @@ class BarGUI(Frame):
             self.__stop_draw = True
         self.__run_state = False
         self.finished = False
+        self.step = False
         self.__create_bars()
 
     def next_step(self):

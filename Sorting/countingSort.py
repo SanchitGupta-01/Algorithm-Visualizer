@@ -26,7 +26,6 @@ class CountingSort(BarGUI):
 
         for num in bars.copy():
             count_dict[num] -= 1
-            print(count_dict[num])
             bars[count_dict[num]] = num
             yield tuple((tuple([count_dict[num]]), True))
             self.add_finished_bar(count_dict[num])
