@@ -88,6 +88,8 @@ class BarGUI(Frame):
 
     def __create_bars(self):
         self.__bars = []
+        self.prev_states = [(tuple(), False, GREY)]
+        self.step_index = 0
         self.__finished_bars = []
         for i in range(self.__bar_count):
             self.__bars.append(randrange(25, self.__canvas.winfo_reqheight()) / self.__canvas.winfo_reqheight())
@@ -139,17 +141,15 @@ class BarGUI(Frame):
                     prev = next(states)
                     self.prev_states.append(prev)
                     self.__render_bars(*prev)
-                    self.step = False
-                    if not self.step:
-                        self.step_index += 1
+                    self.step_index += 1
                 else:
-                    self.__render_bars(*self.prev_states[self.step_index - 1])
+                    self.__render_bars(*self.prev_states[self.step_index])
+                self.step = False
             else:
                 if self.__run_state:
                     self.next_step()
-                self.__render_bars(*self.prev_states[self.step_index - 1])
-                if self.step:
-                    self.step = False
+                self.__render_bars(*self.prev_states[self.step_index])
+                self.step = False
 
         except StopIteration:
             self.__canvas.after(self.__render_speed.get(),
@@ -157,7 +157,8 @@ class BarGUI(Frame):
             self.finished = True if not self.__stop_draw else False
             self.__stop_draw = False
             print("stop/completed")
-            return
+            if self.finished:
+                return
         self.__canvas.after(self.__render_speed.get(), self.draw, states)
 
     def set_render_speed(self, speed):
@@ -166,8 +167,8 @@ class BarGUI(Frame):
     def get_render_speed(self):
         return self.__render_speed.get()
 
-    def set_function_to_run(self, func, *args, **kwargs):
-        self.__function_to_run = lambda i=0: func(*args, **kwargs)
+    # def set_function_to_run(self, func, *args, **kwargs):
+    #     self.__function_to_run = lambda i=0: func(*args, **kwargs)
 
     def add_finished_bar(self, i):
         self.__finished_bars.append(self.__bars[i])
@@ -190,24 +191,25 @@ class BarGUI(Frame):
         self.__create_bars()
 
     def next_step(self):
-        if (self.finished or self.__run_state) and self.step:
+        if self.finished or self.step:
             return
         self.pause()
-        i = self.step_index - 1
-        if i < 0:
+        i = self.step_index
+        if i < 0 or i >= len(self.prev_states):
             return
-        if not i < len(self.prev_states) - 1:
-            cur = self.prev_states[i][0]
-            self.__bars[cur[0]], self.__bars[cur[1]] = self.__bars[cur[1]], self.__bars[cur[0]]
-        self.step_index += 1
+        if i < len(self.prev_states) - 1:
+            if self.prev_states[i][1]:
+                cur = self.prev_states[i][0]  # get swap info -> tuple() in every state
+                self.__bars[cur[0]], self.__bars[cur[1]] = self.__bars[cur[1]], self.__bars[cur[0]]
+            self.step_index += 1
         self.step = True
 
     def prev_step(self):
-        if (self.finished or self.__run_state) and self.step:
+        if self.step:
             return
         self.pause()
-        i = self.step_index - 1
-        if i == 0:
+        i = self.step_index
+        if i <= 0:
             return
         if self.prev_states[i - 1][1]:
             prev = self.prev_states[i - 1][0]
