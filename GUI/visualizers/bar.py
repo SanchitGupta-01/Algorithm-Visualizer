@@ -17,6 +17,7 @@ class BarGUI(Frame):
         master.bind("<Configure>", lambda i=0: self.__on_window_resize())
         master.bind("<space>", lambda i=0: self.pause() if self.__run_state else self.start())
         master.bind("<Return>", lambda i=0: self.start())
+        master.bind("<BackSpace>", lambda i=0: self.stop() if not self.__bar_count == 0 else None)
         master.bind("<Right>", lambda i=0: self.next_step())
         master.bind("<Left>", lambda i=0: self.prev_step())
 
@@ -53,13 +54,13 @@ class BarGUI(Frame):
             print("update")
             self.draw(iter([]))
             self.__resized = False
-        self.after(20, self.__updater)
+        self.after(75, self.__updater)
 
     def __initiator(self):
-        Grid.columnconfigure(self.__input_container, 0, weight=1)
-        Grid.columnconfigure(self.__input_container, 1, weight=2)
-        Grid.rowconfigure(self.__input_container, 0, weight=1)
-        Grid.rowconfigure(self.__input_container, 2, weight=1)
+        self.__input_container.columnconfigure(0, weight=1)
+        self.__input_container.columnconfigure(1, weight=2)
+        self.__input_container.rowconfigure(0, weight=1)
+        self.__input_container.rowconfigure(2, weight=1)
 
         bc_label = Label(self.__input_container, text="Bars: ")
         bc_label.grid(row=0, column=0, sticky='nsew', pady=5)
@@ -69,14 +70,16 @@ class BarGUI(Frame):
 
         bc_entry = Entry(self.__input_container)
         bc_entry.grid(row=0, column=1, sticky='ew', pady=5, padx=50)
+        bc_entry.bind('<Return>', lambda i=0: bc_entry.after(10, get_data))
+        bc_entry.focus_set()
 
         make = Button(self.__input_container, text="Visualize!!!",
-                      command=lambda i=0: get_data(bc_entry))
+                      command=lambda i=0: get_data())
         make.grid(row=2, column=0, columnspan=2, pady=5, sticky='nsew')
 
-        def get_data(bc):
+        def get_data():
             try:
-                self.__bar_count = int(bc.get())
+                self.__bar_count = int(bc_entry.get())
                 assert self.__bar_count != 0
             except (ValueError, AssertionError):
                 e_label['text'] = "Sorry, Enter Valid Number!!!"
@@ -107,7 +110,7 @@ class BarGUI(Frame):
         active = list(active_bars)
 
         for i, bar in enumerate(self.__bars):
-            if bar not in self.__finished_bars or len(active) == 0:
+            if i not in self.__finished_bars or len(active) == 0:
                 b_color = remaining_color
                 outline_color = remaining_color if bar_width < 1 else outline_color
             else:
@@ -166,11 +169,8 @@ class BarGUI(Frame):
     def get_render_speed(self):
         return self.__render_speed.get()
 
-    # def set_function_to_run(self, func, *args, **kwargs):
-    #     self.__function_to_run = lambda i=0: func(*args, **kwargs)
-
     def add_finished_bar(self, i):
-        self.__finished_bars.append(self.__bars[i])
+        self.__finished_bars.append(i)
 
     def get_bars(self):
         return self.__bars

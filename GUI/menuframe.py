@@ -1,8 +1,8 @@
 from tkinter import *
 from GUI.resources.colors import PALE_BLUE_LILY
-from Sorting.Bubble_Sort.bubbleMenu import BubbleMenu
+from Searching.A_Star.a_star import PathFinder
 from Sorting import selectionSort, radixSort, mergeSort, countingSort, \
-    heapSort, quickSort, insertionSort, gnomeSort
+    heapSort, quickSort, insertionSort, gnomeSort, bubbleSort
 
 
 class MenuFrame(Frame):
@@ -13,6 +13,7 @@ class MenuFrame(Frame):
         self.rowconfigure((0, 1), weight=1)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=14)
+        parent.get_root().bind('<Escape>', lambda i=0: parent.back_to_menu())
 
         self.button_color = PALE_BLUE_LILY
 
@@ -46,7 +47,7 @@ class MenuFrame(Frame):
                    relief='flat',
                    font='helvetica 15 bold',
                    bg=self.button_color,
-                   command=lambda i=0: func(BubbleMenu.get_algorithm())
+                   command=lambda i=0: func(bubbleSort.BubbleSort)
                    ).grid(row=0, column=0)
             Button(sorting,
                    text='Insertion Sort',

@@ -8,8 +8,8 @@ A visualizer GUI, for all the sorting and searching algorithms, using tkinter li
 * [Setup](#setup)
 
 ## Sorting Algorithms
-*  [Bubble Sort](Sorting/Bubble_Sort/bubbleSort.py)
-*  [Insertion Sort](Sorting/InsertionSort.py)
+*  [Bubble Sort](Sorting/bubbleSort.py)
+*  [Insertion Sort](Sorting/insertionSort.py)
 *  [Selection Sort](Sorting/selectionSort.py)
 *  [Merge Sort](Sorting/mergeSort.py)
 *  [Counting Sort](Sorting/countingSort.py)
