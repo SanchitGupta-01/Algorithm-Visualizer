@@ -9,6 +9,7 @@ class MenuFrame(Frame):
     def __init__(self, master, parent, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
         self.parent = parent  # parent: Application
+        self.master = master
 
         self.rowconfigure((0, 1), weight=1)
         self.columnconfigure(0, weight=1)
@@ -47,7 +48,7 @@ class MenuFrame(Frame):
                    relief='flat',
                    font='helvetica 15 bold',
                    bg=self.button_color,
-                   command=lambda i=0: func(BubbleMenu.get_algorithm())
+                   command=lambda i=0: BubbleMenu(self.master, self.parent)
                    ).grid(row=0, column=0)
             Button(sorting,
                    text='Insertion Sort',

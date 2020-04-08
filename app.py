@@ -33,6 +33,7 @@ class Application:
                                        bg='grey')
 
         self.interface = Frame(self.__root)
+        self.display = Frame(self.interface)
 
         self.description_frame = Frame(self.interface)
         self.description = Description(self.description_frame)
@@ -43,7 +44,7 @@ class Application:
                                          relief='flat',
                                          command=lambda e=0: self.toggle_controller('description'))
 
-        self.menu = MenuFrame(self.interface, self, bg='grey')
+        self.menu = MenuFrame(self.display, self, bg='grey')
 
         self.controller_frame = Frame(self.interface)
         self.controller = Controller(self.controller_frame, self, bg='lightgrey')
@@ -64,8 +65,12 @@ class Application:
         self.interface.columnconfigure(1, weight=1)
 
         self.description_frame.grid(row=0, column=0, sticky='nsew')
-        self.menu.grid(row=0, column=1, sticky='nsew')
+        self.display.grid(row=0, column=1, sticky='nsew')
         self.controller_frame.grid(row=0, column=2, sticky='nsew')
+
+        self.display.rowconfigure(0, weight=1)
+        self.display.columnconfigure(0, weight=1)
+        self.menu.grid(row=0, column=0, sticky='nsew')
 
         self.description_frame.rowconfigure(0, weight=1)
         self.controller_frame.rowconfigure(0, weight=1)
@@ -93,8 +98,8 @@ class Application:
 
     def __updater(self):
         if self.run is not None and not self.is_running:
-            self.running_algorithm = self.run(self.interface)
-            self.running_algorithm.grid(row=0, column=1, sticky='nsew')
+            self.running_algorithm = self.run(self.display)
+            self.running_algorithm.grid(row=0, column=0, sticky='nsew')
             self.run = None
             self.__algorithm_title['text'] = self.running_algorithm.title
             self.__title['text'] += '  -'
