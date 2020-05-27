@@ -119,7 +119,7 @@ class MenuFrame(Frame):
                    relief='flat',
                    font='helvetica 15 bold',
                    bg=self.button_color,
-                   command=None  # func(PathFinder)
+                   command=lambda i=0: func(AStarPathfinder)
                    ).grid(row=0, column=0)
 
         add_searching_buttons()

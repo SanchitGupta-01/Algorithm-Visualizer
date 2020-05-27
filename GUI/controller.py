@@ -30,6 +30,7 @@ class Controller(Frame):
                              from_=1, to=500,
                              command=lambda i=0: parent.running_algorithm.set_render_speed(render_speed.get()))
         render_speed_label = Label(render_frame, text="Speed")
+        render_speed.set(150)
 
         back_to_menu_button.grid(row=0, column=0, sticky='nsew')
         start.grid(row=1, column=0, sticky='nsew', pady=5)

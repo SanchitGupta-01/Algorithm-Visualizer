@@ -85,7 +85,7 @@ class BarGUI(Frame):
                 e_label['text'] = "Sorry, Enter Valid Number!!!"
                 return
             self.__create_bars()
-            self.__display_interface.tkraise()
+            self.__input_container.destroy()
 
         self.__updater()
 
