@@ -16,8 +16,8 @@ class GridGUI(Frame):
         master.bind("<space>", lambda i=0: self.pause() if self.__run_state else self.start())
         master.bind("<Return>", lambda i=0: self.start())
         master.bind("<BackSpace>", lambda i=0: self.stop() if not self.rows == 0 else None)
-        # master.bind("<Right>", lambda i=0: self.next_step())
-        # master.bind("<Left>", lambda i=0: self.prev_step())
+        master.bind("<Right>", lambda i=0: self.next_step())
+        master.bind("<Left>", lambda i=0: self.prev_step())
 
         self.__input_container = Frame(self)
         self.__input_container.pack(fill=BOTH, expand=YES)
@@ -27,15 +27,16 @@ class GridGUI(Frame):
         self.rows = 0
         self.columns = 0
         self.__grid_nodes: (GridNodes, None) = None
-        self.prev_states = [(tuple(), False, GREY)]
+        self.prev_states = []
 
         self.resized = False
         self.__run_state = False
         self.finished = False
+        self.states_captured = False
         self.__stop_run = False
-        self.__render_speed = IntVar(self.__canvas, 500)
-        # self.step = False
-        # self.step_index = 0
+        self.__render_speed = IntVar(self.__canvas, 75)
+        self.step = False
+        self.step_index = 0  # current access point, i.e. access from this pt if not exist get next state
 
         self.__function_to_run = func
         self.__initiator()
@@ -47,7 +48,7 @@ class GridGUI(Frame):
             self.__grid_nodes = GridNodes(node=self.Node, rows=self.rows,
                                           columns=self.columns, color=GREY)
             self.__set_grid()
-        if self.resized or not self.__run_state:
+        if self.resized or (not self.__run_state and self.finished):
             self.__canvas.delete('all')
             self.__set_grid()
             self.resized = False
@@ -129,21 +130,30 @@ class GridGUI(Frame):
                                                    outline='black')
                 self.__grid_nodes(i, j).set_id(t)
 
-    def __update_grid(self, new_state):
+    def __update_grid(self, state):  # state: node, iter state
         try:
-            assert self.__run_state, 'pause'
             assert not self.__stop_run, 'stop'
-            node = next(new_state)
-            self.__canvas.itemconfig(node.id, fill=node.get_color())
+            if not self.step:
+                assert self.__run_state, 'pause'
+            if self.states_captured or not self.step_index == len(self.prev_states):
+                self.next_step(stop=False)
+                raise AssertionError
+            self.step = False
+            current_state: tuple = next(state)
+            self.step_index += 1
+            self.prev_states.append(current_state)
+            current_state[0].set_color(current_state[2])
+            self.__canvas.itemconfig(current_state[0].id, fill=current_state[0].get_color())
         except StopIteration:
             self.__run_state = False
             self.finished = True
+            print('finished')
             return
         except AssertionError as err:
             if str(err) is 'stop':
                 return
 
-        self.after(self.__render_speed.get(), self.__update_grid, new_state)
+        self.after(self.__render_speed.get(), self.__update_grid, state)
 
     def __on_grid_resize(self):
         self.resized = True
@@ -172,7 +182,38 @@ class GridGUI(Frame):
             self.__stop_run = True
         self.__run_state = False
         self.finished = False
-        self.__set_grid()
+
+    def next_step(self, stop=True):
+        if self.finished or self.step:
+            return
+        if stop:
+            self.pause()
+        i = self.step_index
+        if i < 0 or i > len(self.prev_states):
+            return
+        if i == len(self.prev_states):
+            self.step = True
+            return
+        next_state = self.prev_states[i]  # next_state->(node,from_col,to_col)
+        next_state[0].set_color(next_state[2])
+        self.__canvas.itemconfig(next_state[0].id, fill=next_state[0].get_color())
+        self.step_index += 1
+
+    def prev_step(self, stop=True):
+        if self.finished:
+            self.finished = False
+            self.__stop_run = False
+            self.step = False
+            self.__update_grid(iter(()))
+        if stop:
+            self.pause()
+        i = self.step_index
+        if i <= 0:
+            return
+        prev_state = self.prev_states[i - 1]  # prev_state->(node,from_col,to_color)
+        prev_state[0].set_color(prev_state[1])
+        self.__canvas.itemconfig(prev_state[0].id, fill=prev_state[0].get_color())
+        self.step_index -= 1
 
 
 class GridNodes:

@@ -13,7 +13,7 @@ class AStarPathfinder(GridGUI):
         # self.set_cost()
 
     @staticmethod
-    def a_star_pathfinder(start: Node, goal: Node):
+    def a_star_pathfinder(start: Node, goal: Node) -> tuple:
         open_list = [start]
         closed_list = []
 
@@ -22,6 +22,8 @@ class AStarPathfinder(GridGUI):
 
             if current_node is goal:
                 break
+
+            yield current_node, current_node.get_color(), 'orange'
 
             neighbors = current_node.get_neighbors()
 
@@ -41,15 +43,12 @@ class AStarPathfinder(GridGUI):
                     continue
                 else:
                     node.g_cost, node.h_cost, node.f_cost = new_g, new_h, new_f
-                    node.set_color('yellow')
-                    open_list.append(node)
                     node.set_parent(current_node)
+                    open_list.append(node)
                     open_list = sorted(open_list, key=lambda i=0: i.f_cost, reverse=True)
-                    yield node
+                    yield node, node.get_color(), 'yellow'
 
             closed_list.append(current_node)
-            current_node.set_color('orange')
-            yield current_node
 
     # @staticmethod
     # def set_cost(buttons=0, cost=()):
