@@ -1,5 +1,6 @@
 from GUI.resources.colors import *
 from tkinter import *
+from GUI.gridoptions import GridOptions
 
 
 class GridGUI(Frame):
@@ -39,6 +40,8 @@ class GridGUI(Frame):
         self.step_index = 0  # current access point, i.e. access from this pt if not exist get next state
 
         self.__function_to_run = func
+        self.option_active = None
+        self.last_activated_node = None
         self.__initiator()
 
     def __updater(self):
@@ -105,19 +108,18 @@ class GridGUI(Frame):
                 return
             self.__grid_nodes = GridNodes(node=self.Node, rows=self.rows,
                                           columns=self.columns, color=GREY)
-            self.__grid_nodes.set_goal_node(self.__grid_nodes(self.rows - 1, self.columns - 1))
-            self.__grid_nodes.set_start_node(self.__grid_nodes(0, 0))
             self.__input_container.destroy()
+            self.__updater()
             self.__create_grid()
-            # self.add_controls()
-
-        self.__updater()
 
     def __create_grid(self):
         self.__canvas.after(50, self.__set_grid)
         self.__canvas.configure(bg='black')
         self.__canvas.pack(fill=BOTH, expand=True, padx=1, pady=1)
         self.after(70, self.__update_grid, self.__function_to_run())
+        self.__canvas.bind('<Button-3>', self.show_grid_options)
+        self.__canvas.bind('<B1-Motion>', self.execute_grid_option)
+        self.__canvas.bind('<Button-1>', self.execute_grid_option)
 
     def __set_grid(self):
         for i in range(self.rows):
@@ -158,8 +160,35 @@ class GridGUI(Frame):
     def __on_grid_resize(self):
         self.resized = True
 
-    # def add_controls(self):
-    #     pass
+    def show_grid_options(self, event):
+        within = BooleanVar()
+        within.set(True)
+
+        def remove(w, opt, wait=True):
+            if not wait and not w.get():
+                opt.destroy()
+            if wait:
+                w.set(False)
+                opt.after(200, remove, within, opt, False)
+
+        options = GridOptions(self.__canvas, self.button_action)
+        options.place(x=event.x - 2, y=event.y - 2)
+        options.bind('<Leave>', lambda i=0: remove(within, options))
+        options.bind('<Enter>', lambda i=0: within.set(True))
+
+    def button_action(self, action):
+        self.option_active = action
+
+    def execute_grid_option(self, event):
+        if self.option_active:
+            width = self.width / self.columns
+            height = self.height / self.rows
+            j, i = event.x // width, event.y // height
+            current = self.__grid_nodes(i, j)
+            if current is self.last_activated_node:
+                return
+            self.last_activated_node = current
+            self.option_active(current)
 
     def get_grid_nodes(self):
         return self.__grid_nodes
@@ -173,9 +202,11 @@ class GridGUI(Frame):
     def start(self):
         if not (self.rows == 0 or self.columns == 0):
             self.__run_state = True
+            self.option_active = None
 
     def pause(self):
         self.__run_state = False
+        self.option_active = None
 
     def stop(self):
         if not self.finished:
@@ -188,6 +219,7 @@ class GridGUI(Frame):
             return
         if stop:
             self.pause()
+        self.option_active = None
         i = self.step_index
         if i < 0 or i > len(self.prev_states):
             return
@@ -205,6 +237,7 @@ class GridGUI(Frame):
             self.__stop_run = False
             self.step = False
             self.__update_grid(iter(()))
+        self.option_active = None
         if stop:
             self.pause()
         i = self.step_index
@@ -224,8 +257,10 @@ class GridNodes:
         for i in range(rows):
             for j in range(columns):
                 self.__nodes[(i, j)] = node(self, i, j, 1, color)
-        self.__goal_node = goal
-        self.__start_node = start
+        self.__goal_node = None
+        self.set_goal_node(goal if goal is not None else self.__nodes[(self.rows - 1, self.columns - 1)])
+        self.__start_node = None
+        self.set_start_node(start if start is not None else self.__nodes[(0, 0)])
 
     def __call__(self, x, y):
         return self.__nodes[(x, y)]
@@ -262,6 +297,7 @@ class GridNodes:
             i, j = x + ad[0], y + ad[1]
             if 0 <= i < self.rows and 0 <= j < self.columns:
                 node = self.__nodes[(i, j)]
-                ad_nodes.append(node)
+                if not node.wall:
+                    ad_nodes.append(node)
 
         return ad_nodes

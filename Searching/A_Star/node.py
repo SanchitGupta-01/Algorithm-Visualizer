@@ -1,4 +1,5 @@
 from GUI.visualizers.grid import GridNodes
+from GUI.resources.colors import *
 
 
 class Node:
@@ -10,6 +11,17 @@ class Node:
         self.x_index = x_index
         self.__color = color
         self.id = None
+        self.__wall = False
+
+    @property
+    def wall(self):
+        return self.__wall
+
+    @wall.setter
+    def wall(self, b: bool):
+        self.__wall = b
+        color = 'brown' if b else GREY
+        self.set_color(color)
 
     def position(self):
         return self.x_index, self.y_index
@@ -23,8 +35,11 @@ class Node:
     def set_id(self, i):
         self.id = i
 
+    def start_or_end(self):
+        return self is self.master.get_start_node() or self is self.master.get_goal_node()
+
     def set_color(self, c, skip_check=False):
-        if (not skip_check) and (self is self.master.get_start_node() or self is self.master.get_goal_node()):
+        if (not skip_check) and self.start_or_end():
             return
         self.__color = c
 
