@@ -1,6 +1,6 @@
 from tkinter import *
 from GUI.resources.colors import PALE_BLUE_LILY
-from Searching.A_Star.a_star import PathFinder
+from Searching.A_Star.a_star import AStarPathfinder
 from Sorting import selectionSort, radixSort, mergeSort, countingSort, \
     heapSort, quickSort, insertionSort, gnomeSort, bubbleSort
 
@@ -119,7 +119,7 @@ class MenuFrame(Frame):
                    relief='flat',
                    font='helvetica 15 bold',
                    bg=self.button_color,
-                   command=None  # func(PathFinder)
+                   command=lambda i=0: func(AStarPathfinder)
                    ).grid(row=0, column=0)
 
         add_searching_buttons()

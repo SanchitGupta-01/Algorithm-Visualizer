@@ -2,17 +2,19 @@ from tkinter import *
 from GUI.menuframe import MenuFrame
 from GUI.controller import Controller
 from GUI.visualizers.bar import BarGUI
+from GUI.visualizers.grid import GridGUI
 
 
 class Application:
     def __init__(self):
         self.is_running = False
         self.run: (None, BarGUI) = None
-        self.running_algorithm: (None, BarGUI) = None
+        self.running_algorithm: (None, BarGUI, GridGUI) = None
         self.__root = Tk()
         self.__root.geometry(f"900x600+"
                              f"{int(self.__root.winfo_screenwidth() / 2 - 450)}"
                              f"+{int(self.__root.winfo_screenheight() / 2 - 350)}")
+        self.__root.minsize(750, 300)
 
         self.interface = MenuFrame(self, bg='grey')
 
